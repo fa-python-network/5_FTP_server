@@ -1,9 +1,10 @@
 import os
-
+import pickle
+import socket
 dirname = os.getcwd()
 
-def process(line):
-	req=line.split()
+def process(data,conn):
+	req=pickle.loads(data)
 	if req[0] == 'pwd':
 		return dirname
 
@@ -68,4 +69,10 @@ def process(line):
 	elif req[0] == 'exit':
 		return 'Disconnected'
 	elif req[0] == "scp":
-		return "Test"
+		with open(req[1], "wb") as f:
+			while True:
+   				data = conn.recv(1024)
+   				if data == b"DONE":
+					   break
+   				f.write(data)
+		return "File sent"

@@ -41,10 +41,10 @@ class FTPServer:
 
 	def listenToFTPClient(self,conn,addr):
 		while True:
-			request = conn.recv(1024).decode()
+			request = conn.recv(1024)
 			if not request:
 				conn.close()
 				break
-			response = process(request)
+			response = process(request,conn)
 			conn.send(response.encode())
 FTPServer()
