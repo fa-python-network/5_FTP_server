@@ -1,35 +1,74 @@
+'''
 import socket
 import os
-'''
-pwd - показывает название рабочей директории
-ls - показывает содержимое текущей директории
-cat <filename> - отправляет содержимое файла
-'''
-
-dirname = os.path.join(os.getcwd(), 'docs')
-
-def process(req):
-    if req == 'pwd':
-        return dirname
-    elif req == 'ls':
-        return '; '.join(os.listdir(dirname))
-    return 'bad request'
+from logger import Logfile
+from func import process
 
 
-PORT = 6666
+
+try:
+    port=int(input("ваш порт:"))
+    if not 0 <= port <= 65535:
+        raise ValueError
+except ValueError :
+    port = 9090
+
+
+#l=Logfile()
+#l.serverstart()
+
+
 
 sock = socket.socket()
-sock.bind(('', PORT))
+sock.bind(('', port))
 sock.listen()
-print("Прослушиваем порт", PORT)
+print("Прослушиваем порт", port)
+conn, addr = sock.accept()
+while True:
+    request = conn.recv(1024)
+    if request != b"":
+        request = request.decode()
+        print(request)
+        response = process(request)
+        conn.send(response.encode())
+
+conn.close()
+'''
+import socket
+import os
+from logger import Logfile
+from func import process
+
+
+
+try:
+    port=int(input("ваш порт:"))
+    if not 0 <= port <= 65535:
+        raise ValueError
+except ValueError :
+    port = 9090
+
+'''
+l=Logfile()
+l.serverstart()
+'''
+
+sock = socket.socket()
+sock.bind(('', port))
+sock.listen()
+print("Прослушиваем порт", port)
 
 while True:
     conn, addr = sock.accept()
     
-    request = conn.recv(1024).decode()
-    print(request)
+    while True:
+        request = conn.recv(1024).decode()
+        if request == "":
+            break
     
-    response = process(request)
-    conn.send(response.encode())
+        response = process(request)
+        conn.send(response.encode())
+    conn.close()
 
-conn.close()
+
+
