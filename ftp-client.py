@@ -12,15 +12,25 @@ while True:
         sock.close()
         break
     elif request.lower().split()[0] == "scp":
-        file = os.path.realpath(request.split()[1])
-        sock.send(pickle.dumps(["scp", request.split("/")[-1]]))
-        time.sleep(0.3)
-        with open(file, "rb") as f:
-            data = f.read(1024)
-            while data:
-                sock.send(data)
+        try:
+            if request.lower().split()[2] == "-u":
+                response = sock.recv(1024).decode()
+                with open(request.lower().split()[1].split('/')[-1], "wb") as f:
+                    while True:
+                        data = conn.recv(1024)
+                        if data == b"DONE":
+                            break
+                        f.write(data)
+        except:
+            file = os.path.realpath(request.split()[1])
+            sock.send(pickle.dumps(["scp", request.split("/")[-1]]))
+            time.sleep(0.3)
+            with open(file, "rb") as f:
                 data = f.read(1024)
-        sock.send(b"DONE")
+                while data:
+                    sock.send(data)
+                    data = f.read(1024)
+            sock.send(b"DONE")
     else:
         sock.send(pickle.dumps(request.split()))
     

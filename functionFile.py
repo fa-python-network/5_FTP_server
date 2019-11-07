@@ -69,10 +69,22 @@ def process(data,conn):
 	elif req[0] == 'exit':
 		return 'Disconnected'
 	elif req[0] == "scp":
-		with open(req[1], "wb") as f:
-			while True:
-   				data = conn.recv(1024)
-   				if data == b"DONE":
-					   break
-   				f.write(data)
-		return "File sent"
+		try:
+			if req[2] == "-u":
+				file = os.path.realpath(req[1])
+				time.sleep(0.3)
+				with open(file, "rb") as f:
+					data = f.read(1024)
+					while data:
+						conn.send(data)
+						data = f.read(1024)
+				conn.send(b"DONE")
+			return "File recieved"
+		except:
+			with open(req[1], "wb") as f:
+				while True:
+   					data = conn.recv(1024)
+   					if data == b"DONE":
+					   	break
+   					f.write(data)
+			return "File sent"
