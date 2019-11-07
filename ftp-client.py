@@ -1,9 +1,13 @@
 import socket
 from logger import Logfile
+import pickle
+import os
+import time
+
 
 HOST = 'localhost'
 try:
-    port=int(input("ваш порт:"))
+    port=int(input("Ваш порт:"))
     if not 0 <= port <= 65535:
         raise ValueError
 except ValueError :
@@ -18,10 +22,25 @@ while status:
     l.serverstart()
     while s:
         request = input('>')
-        sock.send(request.encode())
-        response = sock.recv(1024).decode()
-        print(response)
+        #print(response)
         if request == 'exit':
             status=False
             s=False
+        elif request.split()[0] == "copy.from":
+            if request.split()[1] == 'cl':
+                file = os.path.realpath(request.split()[2])
+                sock.send(f"copy.from cl {request.split('/')[-1]}".encode())
+                time.sleep(0.3)
+                with open(file, "rb") as f:
+                    data = f.read(1024)
+                    while data:
+                        sock.send(data)
+                        data = f.read(1024)
+                sock.send(b'sent')
+                print(sock.recv(1024).decode())
+        else:
+            sock.send(request.encode())
+            response = sock.recv(1024).decode()
+            print(response)
+            
     sock.close()

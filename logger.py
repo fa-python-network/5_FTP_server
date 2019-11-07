@@ -33,6 +33,13 @@ class Logfile(object):
     
     def rename(self,old,new):
         self.write_to_file(f"{old} object was renamed to {new} ")
+
+    def copyfromclienttoserver(self,file):
+        self.write_to_file(f"{file}  was sent from client to server  ")
+
+    def copyfromservertoclient(self,file):
+        self.write_to_file(f"{file}  was sent from  server to client  ")
+
     
 
 

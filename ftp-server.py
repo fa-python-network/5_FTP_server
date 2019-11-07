@@ -1,39 +1,4 @@
-'''
-import socket
-import os
-from logger import Logfile
-from func import process
 
-
-
-try:
-    port=int(input("ваш порт:"))
-    if not 0 <= port <= 65535:
-        raise ValueError
-except ValueError :
-    port = 9090
-
-
-#l=Logfile()
-#l.serverstart()
-
-
-
-sock = socket.socket()
-sock.bind(('', port))
-sock.listen()
-print("Прослушиваем порт", port)
-conn, addr = sock.accept()
-while True:
-    request = conn.recv(1024)
-    if request != b"":
-        request = request.decode()
-        print(request)
-        response = process(request)
-        conn.send(response.encode())
-
-conn.close()
-'''
 import socket
 import os
 from logger import Logfile
@@ -66,7 +31,7 @@ while True:
         if request == "":
             break
     
-        response = process(request)
+        response = process(request,conn)
         conn.send(response.encode())
     conn.close()
 
