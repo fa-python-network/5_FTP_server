@@ -4,16 +4,43 @@ import os
 pwd - показывает название рабочей директории
 ls - показывает содержимое текущей директории
 cat <filename> - отправляет содержимое файла
+mkdir <dir> - создаёт папку
 '''
 
-dirname = os.path.join(os.getcwd(), 'docs')
+userdir = os.path.join(os.getcwd(), 'docs')
+
+def check_access(dir):
+    pass
+
+def pwd():
+    return userdir
+
+def ls(dir):
+    return '; '.join(os.listdir(dir))
+
+def cat(dir):
+    content=str()
+    with open(dir,'r') as f:
+        for line in f:
+            content+=line
+    return content
+    
+def mkdir(dir):
+    if not os.path.exists(os.path.join(os.getcwd(),'docs',dir)):
+        os.mkdir(dir)
+    return ''
 
 def process(req):
     if req == 'pwd':
-        return dirname
+        pwd()
     elif req == 'ls':
-        return '; '.join(os.listdir(dirname))
-    return 'bad request'
+        ls(userdir)
+    elif req.split()[0]=='cat':
+        cat(req.split()[1])
+    elif req.split()[0]=='mkdir':
+        mkdir(req.split()[1])
+    else:
+        return 'bad request'
 
 
 PORT = 6666
@@ -32,4 +59,4 @@ while True:
     response = process(request)
     conn.send(response.encode())
 
-conn.close()
+    conn.close()

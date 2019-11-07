@@ -5,6 +5,8 @@ PORT = 6666
 
 while True:
     request = input('>')
+    if request=='exit':
+        break
     
     sock = socket.socket()
     sock.connect((HOST, PORT))
