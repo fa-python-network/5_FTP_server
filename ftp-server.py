@@ -1,5 +1,6 @@
 import socket
 import os
+import re
 '''
 pwd - показывает название рабочей директории
 ls - показывает содержимое текущей директории
@@ -12,11 +13,17 @@ def process(req):
     if req == 'pwd':
         return dirname
     elif req == 'ls':
+        print(req.split(' '))
+        print(re.findall(r'^\w*', req.split(' ')))
         return '; '.join(os.listdir(dirname))
+#    elif 'mkdir' == str(mkdir.findall(str(req))):
+#    elif 'mkdir' == str(re.findall(r'\w+^', req.split(' '))):
+#        return 'lalala' 
+#    elif req == 'cat ' + 
     return 'bad request'
 
 
-PORT = 6666
+PORT = 9090
 
 sock = socket.socket()
 sock.bind(('', PORT))
