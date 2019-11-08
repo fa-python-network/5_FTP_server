@@ -1,0 +1,5 @@
+Содержимое папки:
+1.txt; b; g; j; l; q; t; vC:\Users\181413\Documents\ftp_server\docsСодержимое папки:
+1.txt; b; g; j; l; q; t; v
+C:\Users\181413\Documents\ftp_server\docs
+Создана папка C:\Users\181413\Documents\ftp_server\docs\p
