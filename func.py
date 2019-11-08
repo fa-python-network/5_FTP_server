@@ -1,6 +1,7 @@
 import socket
 import os
 import ftplib
+import time
 from logger import Logfile
 '''
 pwd - показывает название рабочей директории
@@ -13,7 +14,6 @@ delete <filename> - удаляет файл в текущей директори
 rename <filename> <new name> - переименовывает файл/директорию в <new name>
 exit - отключение клиента от сервера
 copy.from <from> <filename> - копирует файл  с клиента (cl)/сервера (ser) (пример: copy.from cl f.txt)
-
 '''
 
 dirname = os.getcwd()
@@ -104,6 +104,23 @@ def process(r,conn):
 							break
 						f.write(data)
 					return 'Файл отправлен'
+				l.copyfromclienttoserver(req[2])
+			except IndexError:
+				return 'Вы не ввели название файла'
+
+		elif req[1] == 'ser':
+			try:
+				file = os.path.realpath(req[2])
+				time.sleep(0.3)
+				with open(file, "rb") as f:
+					data = f.read(1024)
+					while data:
+						conn.send(data)
+						data = f.read(1024)
+					time.sleep(3)
+					conn.send(b'sent')
+					return 'Файл принят'
+				l.copyfromservertoclient(req[2])
 			except IndexError:
 				return 'Вы не ввели название файла'
 		

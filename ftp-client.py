@@ -38,6 +38,16 @@ while status:
                         data = f.read(1024)
                 sock.send(b'sent')
                 print(sock.recv(1024).decode())
+            if request.split()[1] == 'ser':
+                sock.send(request.encode())
+                with open(request.split('/')[-1], "wb") as f:
+                    while True:
+                        data = sock.recv(1024)
+                        if data == b'sent':
+                            break
+                        f.write(data)
+                response = sock.recv(1024).decode()
+                print(response)
         else:
             sock.send(request.encode())
             response = sock.recv(1024).decode()
