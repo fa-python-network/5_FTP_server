@@ -1,7 +1,7 @@
 import socket
 
 HOST = 'localhost'
-PORT = 1252
+PORT = 1253
 print("To exit print 'exit'")
 while True:
     request = input('>')

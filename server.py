@@ -7,8 +7,28 @@ ls - показывает содержимое текущей директори
 cat <filename> - отправляет содержимое файла
 '''
 
-PORT = 1252
-curr_dir = os.path.join(os.getcwd(), 'docs')
+PORT = 1253
+os.chdir('docs')
+curr_dir = os.getcwd()
+
+
+def cat(req):
+    filename = req[4:]
+    try:
+        filename = curr_dir + '/' + filename
+        with open(filename) as f:
+            return f.read()
+    except OSError:
+        return "NET TAKOGO FAILA!!!!!!!!!"
+
+def mkdir(req):
+    dirname = req[6:]
+    try:
+        dirname = curr_dir + '/' + dirname
+        os.mkdir(dirname)
+        return ''
+    except OSError:
+        return "This directory already exists"
 
 
 def process(req):
@@ -19,13 +39,9 @@ def process(req):
     elif req == 'ls':
         return '; '.join(os.listdir(curr_dir))
     elif req[:4] == 'cat ':
-        filename = req[4:]
-        try:
-            filename = curr_dir + '/' + filename
-            with open(filename) as f:
-                return f.read()
-        except:
-            return "NET TAKOGO FAILA!!!!!!!!!!!!!!"
+        return cat(req)
+    elif req[:6] == 'mkdir ':
+        return mkdir(req)
 
     else:
         return 'bad request'
@@ -46,5 +62,6 @@ while True:
     conn.close()
     if request == 'exit':
         print("Client otrubil server nafig")
+        sock.close()
         break
 
