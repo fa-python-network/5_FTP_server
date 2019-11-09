@@ -21,6 +21,7 @@ def cat(req):
     except OSError:
         return "NET TAKOGO FAILA!!!!!!!!!"
 
+
 def mkdir(req):
     dirname = req[6:]
     try:
@@ -29,6 +30,7 @@ def mkdir(req):
         return ''
     except OSError:
         return "This directory already exists"
+
 
 def rmdir(req):
     try:
@@ -45,6 +47,7 @@ def rmdir(req):
         os.rmdir(curr_dir+'/'+req)
         return ''
 
+
 def rm(req):
     filename = req
     try:
@@ -53,13 +56,26 @@ def rm(req):
     except OSError:
         return "This file does not exist"
 
+
+def rename(req):
+    try:
+        src = req[:req.find(' ')]
+        dst = req[req.find(' ')+1:]
+        os.rename(src, dst)
+        return ''
+    except OSError:
+        return "No such file or directory"
+    except:
+        return "Ivalid value"
+
+
 def process(req):
     if req == 'exit':
         return 'exit'
     elif req == 'pwd':
         return curr_dir
     elif req == 'ls':
-        return '; '.join(os.listdir(curr_dir))
+        return '\n'.join(os.listdir(curr_dir))
     elif req[:4] == 'cat ':
         return cat(req)
     elif req[:6] == 'mkdir ':
@@ -68,6 +84,8 @@ def process(req):
         return rmdir(req[6:])
     elif req[:3] == 'rm ':
         return rm(req[3:])
+    elif req[:7] == 'rename ':
+        return rename(req[7:])
     else:
         return 'bad request'
 
