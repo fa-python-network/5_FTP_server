@@ -75,6 +75,7 @@ while True:
     logging.info('Response: ' + str(response))
     conn.send(response.encode())
 
+logging.info('Closed')
 conn.close()
 
 '''
