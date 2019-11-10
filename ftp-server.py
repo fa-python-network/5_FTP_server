@@ -28,17 +28,18 @@ def lazy_output(addr, data):
     logging.info(f"Пользователь {addr} заканчивает сессию\n")
 
 def process(req):
+
     dirname = os.path.join(os.getcwd(), 'docs')
-    if req == 'pwd'.strip():
+    if req.strip() == 'pwd':
         logging.info(dirname)
         return dirname
 
-    elif req == 'ls':
+    elif req.strip() == 'ls':
         logging.info('; '.join(os.listdir(dirname)))
         return '; '.join(os.listdir(dirname))
 
-    elif req[:6] == 'mkfile':
-        user_new_file = os.path.join(dirname, req[7:])
+    elif req.strip()[:6] == 'mkfile':
+        user_new_file = os.path.join(dirname, req.strip()[7:])
         if os.path.isfile(user_new_file) == True:
             return "Файл уже существует"
         else:
@@ -46,37 +47,49 @@ def process(req):
             file.close()
             return "Файл успешно создан!"
 
-    elif req[:6] == 'remove':
-        user_file = os.path.join(dirname, req[7:])
+    elif req.strip()[:6] == 'remove':
+        user_file = os.path.join(dirname, req.strip()[7:])
         if os.path.isfile(user_file) == True:
             os.remove(user_file)
             return "Файл успешно удалён"
         else:
             return "Файл не существует в текущей директории"
 
-    elif req[:5] == 'mkdir':
-        user_new_dir = os.path.join(dirname, req[6:])
+    elif req.strip()[:5] == 'mkdir':
+        user_new_dir = os.path.join(dirname, req.strip()[6:])
         if os.path.isdir(user_new_dir) == True:
             return "Такая папка уже существует"
         else:
             os.mkdir(user_new_dir)
             return "Папка успешно создана!"
 
-    elif req[:5] == 'rmdir':
-        user_dir = os.path.join(dirname, req[6:])
+    elif req.strip()[:5] == 'rmdir':
+        user_dir = os.path.join(dirname, req.strip()[6:])
         if os.path.isdir(user_dir) == True:
             os.rmdir(user_dir)
             return "Папка успешно удалена"
         else:
             return "Папка не существует"
 
-    elif req[:6] == 'rmtree':
-        user_dir = os.path.join(dirname, req[7:])
+    elif req.strip()[:6] == 'rmtree':
+        user_dir = os.path.join(dirname, req.strip()[7:])
         if os.path.isdir(user_dir) == True:
             shutil.rmtree(user_dir)
             return "Папка успешно удалена"
         else:
             return "Папка не существует"
+
+    elif req.split()[0].strip() == 'rename':
+        if (len(req.split()) != 3) or req.split()[1].strip() == "" or req.split()[2].strip() == "":
+            return 'bad request'
+        dir_name = os.path.join(dirname, req.split()[1].strip())
+        new_dir_name = os.path.join(dirname, req.split()[2].strip())
+        if (os.path.exists(dir_name) == True) and (os.path.exists(new_dir_name) == False):
+            os.rename(dir_name, new_dir_name)
+            return "Успешно переименовано"
+        else:
+            return "Файл или папку нельзя переименовать"
+
     logging.info('Неправильный запрос\n')
     return 'bad request'
 

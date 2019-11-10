@@ -22,7 +22,7 @@ print('Введите Ваше сообщение/запрос или "exit" д�
 msg = ""
 
 while True:
-	request = input('>').strip()
+	request = input('>')
 	if request == "exit" or request == "":
 		a = 1
 		break
