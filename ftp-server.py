@@ -1,11 +1,12 @@
 import socket
 import os
+import logging
 '''
 pwd - показывает название рабочей директории
 ls - показывает содержимое текущей директории
 cat <filename> - отправляет содержимое файла
 '''
-
+logging.basicConfig(filename="log.log", level = logging.INFO)
 dirname = os.path.join(os.getcwd(), 'docs')
 
 def process(req):
@@ -53,20 +54,25 @@ def process(req):
         return 'bad request'
 
 
-PORT = 6666
+PORT = 6672
 
 sock = socket.socket()
 sock.bind(('', PORT))
+logging.info('ON')
 sock.listen()
+logging.info('Listening')
 print("Прослушиваем порт", PORT)
 
 while True:
     conn, addr = sock.accept()
-    
+    logging.info('Connected')
+
     request = conn.recv(1024).decode()
+    logging.info('Request: ' + str(request))
     print(request)
     
     response = process(request)
+    logging.info('Response: ' + str(response))
     conn.send(response.encode())
 
 conn.close()
