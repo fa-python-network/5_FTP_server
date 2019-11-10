@@ -23,7 +23,7 @@ msg = ""
 
 while True:
 	request = input('>').strip()
-	if request == "exit":
+	if request == "exit" or request == "":
 		a = 1
 		break
 	sock.send(request.encode())
