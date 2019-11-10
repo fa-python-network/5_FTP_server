@@ -51,6 +51,7 @@ def process(req):
             return 'there is no such file'
 
     else:
+        logging.info('Bad request')
         return 'bad request'
 
 
