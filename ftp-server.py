@@ -1,6 +1,7 @@
 import socket
 import os
 import logging
+import threading
 '''
 pwd - показывает название рабочей директории
 ls - показывает содержимое текущей директории
@@ -9,13 +10,57 @@ cat <filename> - отправляет содержимое файла
 logging.basicConfig(filename="log.log", level = logging.INFO)
 dirname = os.path.join(os.getcwd(), 'docs')
 
+def send_msg(conn: socket.socket,msg):
+    """
+    отправка сообщений
+    """
+    header=len(msg)
+    formated_msg = f'{header:<4}{msg}'.encode()
+    conn.send(formated_msg)
+
+def recv_msg(conn: socket.socket):
+    """
+    принятие сообщений
+    """
+    try:
+        header=int(conn.recv(4).decode().strip())
+        msg=conn.recv(2*header)
+        return msg.decode()
+    except:
+        pass
+
+def handle(conn,addr):
+    """
+    обработка сообщений
+    """
+    request = recv_msg(conn)
+    logging.info('Request: ' + str(request))
+    print(request)
+    
+    #if 'exit' in request:
+     #   conn.close()
+      #  return 'closed'
+
+    response = process(request)
+    logging.info('Response: ' + str(response))
+    send_msg(conn, response)
+
 def process(req):
+    """
+    обработка команд
+    """
+    global dirname
 
     if req == 'pwd':
         return dirname
 
     elif req == 'ls':
         return '; '.join(os.listdir(dirname))
+
+    elif req == 'exit':
+        logging.info('Disconnected')
+        conn.close()
+        return 'closed'
 
     elif req.strip()[:5] == 'mkdir':
         new_dir = os.path.join(dirname, req.strip()[6:])
@@ -54,39 +99,37 @@ def process(req):
         logging.info('Bad request')
         return 'bad request'
 
-
-PORT = 6672
-
 sock = socket.socket()
-sock.bind(('', PORT))
-logging.info('ON')
-sock.listen()
+
+port = 6666             # проверка порта на занятость
+while port!=65525:
+    try:
+        sock.bind(('',port))
+        logging.info('ON')
+        print('The port is {}'.format(port))
+        break
+    except:
+        print('The port {} is not available. Checking new one...')
+        port+=1
+
+sock.listen(1)
 logging.info('Listening')
-print("Прослушиваем порт", PORT)
+sock.setblocking(1)
 
-while True:
-    conn, addr = sock.accept()
-    logging.info('Connected')
+try:
+    c = 0 
+    while True:
+        conn, addr = sock.accept()
+        c+=1
+        logging.info('Connected')
 
-    request = conn.recv(1024).decode()
-    logging.info('Request: ' + str(request))
-    print(request)
-    
-    response = process(request)
-    logging.info('Response: ' + str(response))
-    conn.send(response.encode())
+        tr = threading.Thread(target=handle, args=(conn,addr))
+        logging.info('started potoc ' + str(c))
+        print('potoc '+ str(c))
+        tr.start()
+finally:
+    logging.info('Closed')
+    conn.close()
 
-logging.info('Closed')
-conn.close()
-
-'''
-    elif req.strip()[:2] == 'cd':
-        destination = os.path.join(dirname, req.strip()[3:])
-        print(destination)
-        if os.path.isdir(destination) == True:
-            os.chdir(destination)
-            return os.getcwd()
-        else:
-            return 'there is no such directory ' + str(destination)
-'''
-
+#logging.info("Closed")
+#conn.close()

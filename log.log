@@ -1,0 +1,63 @@
+INFO:root:ON
+INFO:root:Listening
+INFO:root:Connected
+INFO:root:Request: ls
+INFO:root:Response: sos; 2.txt; 1.txt; kek
+INFO:root:Connected
+INFO:root:Request: rename sos SOS
+INFO:root:Response: it is renamed
+INFO:root:ON
+INFO:root:Listening
+INFO:root:Connected
+INFO:root:Request: ls
+INFO:root:Response: SOS; 2.txt; 1.txt; kek
+INFO:root:Connected
+INFO:root:Request: exit
+INFO:root:Disconnected
+INFO:root:Response: None
+INFO:root:ON
+INFO:root:Listening
+INFO:root:Connected
+INFO:root:Closed
+INFO:root:ON
+INFO:root:Listening
+INFO:root:Connected
+INFO:root:started potoc 1
+INFO:root:Closed
+INFO:root:ON
+INFO:root:Listening
+INFO:root:Connected
+INFO:root:started potoc 1
+INFO:root:Closed
+INFO:root:ON
+INFO:root:Listening
+INFO:root:Connected
+INFO:root:started potoc 1
+INFO:root:Closed
+INFO:root:ON
+INFO:root:Listening
+INFO:root:Connected
+INFO:root:started potoc 1
+INFO:root:Closed
+INFO:root:ON
+INFO:root:Listening
+INFO:root:Connected
+INFO:root:started potoc 1
+INFO:root:Closed
+INFO:root:ON
+INFO:root:Listening
+INFO:root:Connected
+INFO:root:started potoc 1
+INFO:root:Request: None
+INFO:root:Closed
+INFO:root:ON
+INFO:root:Listening
+INFO:root:Connected
+INFO:root:started potoc 1
+INFO:root:Request: None
+INFO:root:Closed
+INFO:root:ON
+INFO:root:Listening
+INFO:root:Connected
+INFO:root:started potoc 1
+INFO:root:Request: None
