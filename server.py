@@ -14,7 +14,7 @@ cts <filename> - копирование файла на сервер
 ctc <filename> - копирование файла на клиент
 '''
 
-PORT = 1260
+PORT = 1262
 os.chdir('docs')
 curr_dir = os.getcwd()
 
@@ -89,7 +89,12 @@ def cts(filename):
     return ''
 
 
-def ctc(req):
+def ctc(filename):
+    conn.send('file'.encode())
+    conn.send(filename.encode())
+    with open(filename, 'rb') as f:
+        a = f.read()
+    conn.send(a)
     return ''
 
 
@@ -113,7 +118,7 @@ def process(req):
     elif req[:4] == 'cts ':
         return cts(req[4:])
     elif req[:4] == 'ctc ':
-        return cts(req[4:])
+        return ctc(req[4:])
     else:
         return 'bad request'
 
