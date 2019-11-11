@@ -20,6 +20,7 @@ dirname = os.path.join(os.getcwd(), 'docs')
 dirlevel = 0
 
 def process(req):
+	global conn
 	global dirname																									#текущая папка
 	global dirlevel																									#уровень в файловой системе, чтобы не вылезти из дозволенных границ
 	req = req + ' _eoc_'																							#флаг окончания команды
@@ -162,6 +163,16 @@ def process(req):
 		else:
 			return 'empty filename'
 
+
+
+	elif req.split(' ')[0] == 'push':																				#загрузить текстовый файл от клиента
+		if req.split(' ')[1] != '_eoc_':
+			if '..' in req.split(' ')[1] or '/' in req.split(' ')[1] or '\\' in req.split(' ')[1]:
+				return 'Not allowed using .. \\ / in complex path!'
+			filecontent = conn.recv(1024)
+			with open(os.path.join(dirname,req.split(' ')[1]),'w') as f:
+				f.write(filecontent.decode())
+			return 'File uploaded!'
 
 
 

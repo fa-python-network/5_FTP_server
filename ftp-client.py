@@ -70,17 +70,41 @@ help - открыть помощь
 		sock = socket.socket()
 		sock.connect((HOST, PORT))
 
-		sock.send(request.encode())
+		if request.split(' ')[0] == 'push':
+			request+=' _eoc_'
+			if request.split(' ')[1] != '_eoc_':
+				if '..' in request.split(' ')[1] or '/' in request.split(' ')[1] or '\\' in request.split(' ')[1]:
+					print('Not allowed using .. / \\ in complex path!')
+				else:
+					if os.path.exists(request.split(' ')[1]):
+						if os.path.isfile(request.split(' ')[1]):
+							sock.send(request.encode())
+							with open(request.split(' ')[1],'r') as f:
+								forsend = f.read().encode()
+							sock.send(forsend)
+							answer = sock.recv(1024)
+							print(answer.decode())
+						else:
+							print('This is not a file!')
+					else:
+						print('file does not exist!')
+			else:
+				print('filename required!')
 
-		response = sock.recv(1024).decode()
-		if request.split(' ')[0] == 'get':
-			if response.split('-!-!-!->')[0] == 'success':
-				with open(request.split(' ')[1],'w') as f:
-					f.write(response.split('-!-!-!->')[1])
-				print('File got! Check your working directory!')
+		else:
+
+			sock.send(request.encode())
+
+			response = sock.recv(1024).decode()
+			if request.split(' ')[0] == 'get':
+				if response.split('-!-!-!->')[0] == 'success':
+					with open(request.split(' ')[1],'w') as f:
+						f.write(response.split('-!-!-!->')[1])
+					print('File got! Check your working directory!')
+				else:
+					print(response)
+
 			else:
 				print(response)
-		else:
-			print(response)
 
 		sock.close()
