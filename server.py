@@ -5,9 +5,16 @@ import os
 pwd - показывает название рабочей директории
 ls - показывает содержимое текущей директории
 cat <filename> - отправляет содержимое файла
+exit - отключение клиента
+mkdir <directory name> - создание директории
+rmdir <directory name> - удаление директории и всего содержимого рекурсивно
+rm <filename> - удаление файла
+rename <filename> <new filename> - переименование файла
+cts <filename> - копирование файла на сервер
+ctc <filename> - копирование файла на клиент
 '''
 
-PORT = 1253
+PORT = 1260
 os.chdir('docs')
 curr_dir = os.getcwd()
 
@@ -69,6 +76,23 @@ def rename(req):
         return "Ivalid value"
 
 
+def cts(filename):
+    a = b''
+    while True:
+        try:
+            data = conn.recv(1024)
+        except socket.timeout:
+            break
+        a += data
+    with open(filename, 'wb') as f:
+        f.write(a)
+    return ''
+
+
+def ctc(req):
+    return ''
+
+
 def process(req):
     if req == 'exit':
         return 'exit'
@@ -86,6 +110,10 @@ def process(req):
         return rm(req[3:])
     elif req[:7] == 'rename ':
         return rename(req[7:])
+    elif req[:4] == 'cts ':
+        return cts(req[4:])
+    elif req[:4] == 'ctc ':
+        return cts(req[4:])
     else:
         return 'bad request'
 
@@ -97,6 +125,7 @@ sock.listen(0)
 while True:
     print("Слушаем порт")
     conn, addr = sock.accept()
+    conn.settimeout(1)
 
     request = conn.recv(1024).decode()
     print(request)
