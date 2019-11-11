@@ -63,6 +63,7 @@ async def tcp_client():
 
 
 if __name__ == '__main__':
+    colorama.init(convert=True)
     print("""
     Commands:
     - exit - bb
