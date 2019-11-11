@@ -35,10 +35,11 @@ def read_file(filename):
     try:
         file = open(filename)
         text = file.read()
+        print(text)
         file.close()
         return text
     except:
-        return 'there is no such file'
+        return 'f: there is no such file'
 
 
 class Potoc(threading.Thread):
@@ -100,7 +101,16 @@ class Potoc(threading.Thread):
                         os.remove(del_file)
                         send_msg(self.conn, str(del_file) + ' is removed')
                     else:
-                        send_msg('there is no such file')
+                        send_msg(self.conn, 'there is no such file')
+
+                elif req.strip()[:3] == 'cat':
+                    cat_file = os.path.join(self.dirname, req.strip()[4:])
+                    print(cat_file)
+                    print(req.strip()[4:])
+                    if os.path.isfile(cat_file) == True:
+                        send_msg(self.conn, read_file(cat_file))
+                    else:
+                        send_msg(self.conn, 'there is no such file')
 
                 else:
                     logging.info('Bad request')
@@ -137,6 +147,3 @@ while True:
 
     Potoc(conn,addr).start()
     logging.info('Connected')
-
-#logging.info("Closed")
-#conn.close()
