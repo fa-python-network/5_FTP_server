@@ -2,13 +2,15 @@ import socket
 import os
 import logging
 import threading
+
 '''
 pwd - показывает название рабочей директории
 ls - показывает содержимое текущей директории
 cat <filename> - отправляет содержимое файла
 '''
+
 logging.basicConfig(filename="log.log", level = logging.INFO)
-#dirname = os.path.join(os.getcwd(), 'docs')
+
 
 def send_msg(conn: socket.socket,msg):
     """
@@ -29,6 +31,16 @@ def recv_msg(conn: socket.socket):
     except:
         pass
 
+def read_file(filename):
+    try:
+        file = open(filename)
+        text = file.read()
+        file.close()
+        return text
+    except:
+        return 'there is no such file'
+
+
 class Potoc(threading.Thread):
 
     def __init__(self,conn,addr):
@@ -42,8 +54,7 @@ class Potoc(threading.Thread):
 
         while True:
             req = recv_msg(self.conn)
-            #logging.info('Request: ' + str(req))
-            #print(req)
+            
 
             if req:
                 logging.info('Request: ' + str(req))
