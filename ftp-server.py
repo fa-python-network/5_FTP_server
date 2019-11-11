@@ -8,7 +8,7 @@ ls - показывает содержимое текущей директори
 cat <filename> - отправляет содержимое файла
 '''
 logging.basicConfig(filename="log.log", level = logging.INFO)
-dirname = os.path.join(os.getcwd(), 'docs')
+#dirname = os.path.join(os.getcwd(), 'docs')
 
 def send_msg(conn: socket.socket,msg):
     """
@@ -29,75 +29,78 @@ def recv_msg(conn: socket.socket):
     except:
         pass
 
-def handle(conn,addr):
-    """
-    обработка сообщений
-    """
-    request = recv_msg(conn)
-    logging.info('Request: ' + str(request))
-    print(request)
-    
-    #if 'exit' in request:
-     #   conn.close()
-      #  return 'closed'
+class Potoc(threading.Thread):
 
-    response = process(request)
-    logging.info('Response: ' + str(response))
-    send_msg(conn, response)
+    def __init__(self,conn,addr):
+        super().__init__()
+        self.conn = conn
+        self.addr = addr
 
-def process(req):
-    """
-    обработка команд
-    """
-    global dirname
+    def run(self):
 
-    if req == 'pwd':
-        return dirname
+        self.dirname = os.path.join(os.getcwd(), 'docs')
 
-    elif req == 'ls':
-        return '; '.join(os.listdir(dirname))
+        while True:
+            req = recv_msg(self.conn)
+            #logging.info('Request: ' + str(req))
+            #print(req)
 
-    elif req == 'exit':
-        logging.info('Disconnected')
-        conn.close()
-        return 'closed'
+            if req:
+                logging.info('Request: ' + str(req))
+                print(req)
 
-    elif req.strip()[:5] == 'mkdir':
-        new_dir = os.path.join(dirname, req.strip()[6:])
-        if os.path.isdir(new_dir) == False:
-            os.mkdir(new_dir)
-            return 'dir is created'
-        else:
-            return 'you cant create what has been created already'
+                if req == 'pwd':
+                    send_msg(self.conn,self.dirname)
 
-    elif req.strip()[:5] == 'rmdir':
-        del_dir = os.path.join(dirname, req.strip()[6:])
-        if os.path.isdir(del_dir) == False:
-            return 'you cant delete what does not exist, silly'
-        else:
-            os.rmdir(del_dir)
-            return str(del_dir) + ' is removed, my lord'
+                elif req == 'ls':
+                     send_msg(self.conn, '; '.join(os.listdir(self.dirname)))
 
-    elif req.strip()[:6] == 'rename':
-        old_name = os.path.join(dirname, req.split(' ')[1])
-        new_name = os.path.join(dirname, req.split(' ')[2])
-        if os.path.isdir(os.path.join(dirname,old_name)) == True:
-            os.rename(old_name, new_name)
-            return 'it is renamed'
-        else:
-            return 'there is no such directory ' + str(old_name)
+                elif 'exit' in req:
+                    self.conn.close()
 
-    elif req.strip()[:6] == 'rmfile':
-        del_file = os.path.join(dirname, req.strip()[7:])
-        if os.path.isfile(del_file) == True:
-            os.remove(del_file)
-            return str(del_file) + ' is removed'
-        else:
-            return 'there is no such file'
+                elif req.strip()[:5] == 'mkdir':
+                    new_dir = os.path.join(self.dirname, req.strip()[6:])
+                    if os.path.isdir(new_dir) == False:
+                        os.mkdir(new_dir)
+                        send_msg(self.conn, 'dir is created')
+                    else:
+                        send_msg(self.conn, 'you cant create what has been created already')
 
-    else:
-        logging.info('Bad request')
-        return 'bad request'
+                elif req.strip()[:5] == 'rmdir':
+                    del_dir = os.path.join(self.dirname, req.strip()[6:])
+                    if os.path.isdir(del_dir) == False:
+                        send_msg(self.conn, 'you cant delete what does not exist, silly')
+                    else:
+                        os.rmdir(del_dir)
+                        send_msg(self.conn, str(del_dir) + ' is removed, my lord')
+
+                elif req.strip()[:6] == 'rename':
+                    old_name = os.path.join(self.dirname, req.split(' ')[1])
+                    new_name = os.path.join(self.dirname, req.split(' ')[2])
+                    if os.path.isdir(os.path.join(self.dirname,old_name)) == True:
+                        os.rename(old_name, new_name)
+                        send_msg(self.conn,'it is renamed')
+                    else:
+                        send_msg(self.conn, 'there is no such directory ' + str(old_name))
+
+                elif req.strip()[:6] == 'rmfile':
+                    del_file = os.path.join(self.dirname, req.strip()[7:])
+                    if os.path.isfile(del_file) == True:
+                        os.remove(del_file)
+                        send_msg(self.conn, str(del_file) + ' is removed')
+                    else:
+                        send_msg('there is no such file')
+
+                else:
+                    logging.info('Bad request')
+                    send_msg(self.conn, 'bad request')
+
+            elif req is None:
+                break
+
+            else: 
+                logging.info('Bad request')
+                send_msg(self.conn, 'bad request')
 
 sock = socket.socket()
 
@@ -109,27 +112,20 @@ while port!=65525:
         print('The port is {}'.format(port))
         break
     except:
-        print('The port {} is not available. Checking new one...')
+        print('The port {} is not available. Checking new one...'.format(port))
         port+=1
 
 sock.listen(1)
 logging.info('Listening')
 sock.setblocking(1)
 
-try:
-    c = 0 
-    while True:
-        conn, addr = sock.accept()
-        c+=1
-        logging.info('Connected')
 
-        tr = threading.Thread(target=handle, args=(conn,addr))
-        logging.info('started potoc ' + str(c))
-        print('potoc '+ str(c))
-        tr.start()
-finally:
-    logging.info('Closed')
-    conn.close()
+while True:
+    conn, addr = sock.accept()
+    logging.info('Connected')
+
+    Potoc(conn,addr).start()
+    logging.info('Connected')
 
 #logging.info("Closed")
 #conn.close()
