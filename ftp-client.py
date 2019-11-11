@@ -1,17 +1,21 @@
+#
+#
 import socket
 
-HOST = 'localhost'
-PORT = 6666
+port = 10000
+lh = 'localhost'
 
 while True:
-    request = input('>')
+    req = input('>')
     
     sock = socket.socket()
-    sock.connect((HOST, PORT))
+    sock.connect((lh, port))
     
-    sock.send(request.encode())
+    sock.send(req.encode())
     
-    response = sock.recv(1024).decode()
-    print(response)
+    res = sock.recv(1024).decode()
+    print(res)
     
-    sock.close()
+    if req == 'cquit':
+        sock.close()
+        break
