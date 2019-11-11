@@ -137,8 +137,4 @@ while True:
     response = process(request)
     conn.send(response.encode())
     conn.close()
-    if request == 'exit':
-        print("Client otrubil server nafig")
-        sock.close()
-        break
 

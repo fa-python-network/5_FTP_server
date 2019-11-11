@@ -38,5 +38,5 @@ while True:
     print(response)
     sock.close()
     if response == 'exit':
-        print("Vi otrubili server nafig, tak chto vas mi tozhe virubaem :)")
+        print("Vi otrubili clienta nafig:)")
         break
