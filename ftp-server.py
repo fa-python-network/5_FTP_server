@@ -12,6 +12,8 @@ import shutil
 	rename <f/d name> <f/d name>		- переименовать файл, папку с первым названием
 	cp <f/d name> <f/d name>			- копировать файл, папку с первым названием
 	cd <dirname>						- перейти в папку dirname
+	get <filename>						- скачать с сервера файл
+	push <filename>						- загрузить на сервер файл
 '''
 
 dirname = os.path.join(os.getcwd(), 'docs')
@@ -142,6 +144,23 @@ def process(req):
 				return 'Dir with such name does not exist!'
 		else:
 			return 'dir name required!'
+
+
+
+	elif req.split(' ')[0] == 'get':																				#скачать текстовый файл
+		if req.split(' ')[1] != '_eoc_':
+			if os.path.exists(os.path.join(dirname,req.split(' ')[1])):
+				if os.path.isfile(os.path.join(dirname,req.split(' ')[1])):
+					if '..' in req.split(' ')[1]:
+						return 'Not allowed using .. in complex path!'
+					with open(os.path.join(dirname,req.split(' ')[1]),'r',encoding='UTF-8') as f:
+						return 'success-!-!-!->'+f.read()
+				else:
+					return 'This is not a file!'
+			else:
+				return 'no such file'
+		else:
+			return 'empty filename'
 
 
 
