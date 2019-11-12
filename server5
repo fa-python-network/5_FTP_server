@@ -1,0 +1,38 @@
+import socket
+import os
+
+PORT = 9091
+
+def process(req):
+    if req == 'pws':
+        return os.getcwd()
+    elif req == 'ls': 
+        return '; '.join(os.listdir())
+ #  elif req == 'touch': #sozdanie file
+ #      return '; '.join(os.touch())
+    elif req == 'mkdir': #sozdanie papka
+        try:
+            os.mkdir("Test")
+            return "OK"
+        except:
+            return "Fail"
+    elif req == 'del': #delite papka
+        return os.rmdir("Test")
+    else:
+        return 'bad request'
+
+sock = socket.socket()
+sock.bind(('', PORT))
+sock.listen()
+
+while True:
+    print("Port:",PORT)
+    conn, addr = sock.accept()
+    print(addr)
+
+    request = conn.recv(1024).decode()
+    print(request)
+    response = process(request)
+    conn.send(response.encode())
+
+sock.close()
