@@ -2,6 +2,8 @@ import socket
 import os
 import shutil
 import datetime
+import pickle
+
 
 '''
 	pwd 								- текущая директория
@@ -190,17 +192,40 @@ sock = socket.socket()
 sock.bind(('', PORT))
 sock.listen(5)
 
+clientsfile = 'clients.pickle'
+clients = {}
+
+if (os.stat(clientsfile).st_size != 0):
+	with open(clientsfile,'rb') as f:
+		clients = pickle.load(f)
+else:
+	clients = {}
+
+print('База клиентов:')
+print(clients)
+	
 logfile = 'access.log'
 print('Сервер запущен!')
 
 while True:
 	conn, addr = sock.accept()
+	
+	userdata = conn.recv(1024).decode()
+	
+	if userdata.split('->')[0] in clients.keys():
+		if clients[userdata.split('->')[0]] == userdata.split('->')[1]:
+			conn.send('allowed!'.encode())
+			request = conn.recv(1024).decode()
+			with open(logfile,'a') as f:
+				f.write(datetime.datetime.today().strftime('%Y-%m-%d %H:%M')+' - '+request+'\n')
 
-	request = conn.recv(1024).decode()
-	with open(logfile,'a') as f:
-		f.write(datetime.datetime.today().strftime('%Y-%m-%d %H:%M')+' - '+request+'\n')
-
-	response = process(request)
-	conn.send(response.encode())
-
-	conn.close()
+			response = process(request)
+			conn.send(response.encode())
+			
+			conn.close()
+		else:
+			conn.send('invalid'.encode())
+			conn.close()
+	else:
+		conn.send('invalid'.encode())
+		conn.close()
