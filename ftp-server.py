@@ -1,6 +1,7 @@
 import socket
 import os
 import shutil
+import datetime
 
 '''
 	pwd 								- текущая директория
@@ -25,7 +26,9 @@ def process(req):
 	global dirlevel																									#уровень в файловой системе, чтобы не вылезти из дозволенных границ
 	req = req + ' _eoc_'																							#флаг окончания команды
 	if req.split(' ')[0] == 'pwd':																					#текущая директория
-		return dirname
+		if not dirname.split('docs')[1]:
+			return '\\'
+		return dirname.split('docs')[1]
 
 	elif req.split(' ')[0] == 'ls':																					#список файлов
 		return '; '.join(os.listdir(dirname))
@@ -129,7 +132,7 @@ def process(req):
 					if '..' in req.split(' ')[1] and req.split(' ')[1] != '..':
 						return 'Not allowed using .. in complex path!'
 					if req.split(' ')[1] == '.':
-						return f'Now you are in {dirname}'
+						return 'Done'
 					if req.split(' ')[1] == '..':
 						if dirlevel > 0:																#не находимся ли мы уже в корне пользовательской папки?
 							dirlevel-=1
@@ -138,7 +141,9 @@ def process(req):
 					dirname = os.path.join(dirname,req.split(' ')[1])
 					if req.split(' ')[1] != '..':														#спустились на один уровень вниз
 						dirlevel+=1
-					return f'Now you are in {dirname}'
+						return 'Done'
+					else:
+						return 'Done'
 				else:
 					return 'This is not a dir!'
 			else:
@@ -185,11 +190,15 @@ sock = socket.socket()
 sock.bind(('', PORT))
 sock.listen(5)
 
+logfile = 'access.log'
+print('Сервер запущен!')
+
 while True:
 	conn, addr = sock.accept()
 
 	request = conn.recv(1024).decode()
-	print(request)
+	with open(logfile,'a') as f:
+		f.write(datetime.datetime.today().strftime('%Y-%m-%d %H:%M')+' - '+request+'\n')
 
 	response = process(request)
 	conn.send(response.encode())
