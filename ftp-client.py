@@ -1,7 +1,7 @@
 import socket
 
 HOST = 'localhost'
-PORT = 9098
+PORT = 9097
 
 while True:
     request = input('Чего желаете? > ')
