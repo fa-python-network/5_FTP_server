@@ -11,7 +11,6 @@ class Logfile(object):
         
 
         if file_name is None:
-            server = "server"
             file_name = self.file_name
     
         with open(file_name, "a", encoding="utf-8") as f:

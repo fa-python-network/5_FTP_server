@@ -23,6 +23,7 @@ def process(r,conn):
 	for i in r:
 		if i=='/':
 			return('Название файла указывается без абсолютного пути')
+		
 			
 
 	req=r.split()
@@ -99,7 +100,7 @@ def process(r,conn):
 
 
 	elif req[0] == 'copy.from':
-		print("Tuta")
+		
 		if req[1] == 'cl':
 			try:
 				with open(req[2], "wb") as f:

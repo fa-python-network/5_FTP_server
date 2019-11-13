@@ -34,16 +34,23 @@ while status:
             s=False
         elif request.split()[0] == "copy.from":
             if request.split()[1] == 'cl':
-                file = os.path.realpath(request.split()[2])
-                sock.send(f"copy.from cl {request.split('/')[-1]}".encode())
-                time.sleep(0.3)
-                with open(file, "rb") as f:
-                    data = f.read(1024)
-                    while data:
-                        sock.send(data)
+                a=True
+                for i in request.split()[2]:
+                    if i=='/':
+                        print('Название файла указывается без абсолютного пути')
+                        a=False
+                        break
+                if a==True:
+                    file = os.path.realpath(request.split()[2])
+                    sock.send(f"copy.from cl {file.split('/')[-1]}".encode())
+                    time.sleep(0.3)
+                    with open(file, "rb") as f:
                         data = f.read(1024)
-                sock.send(b'sent')
-                print(sock.recv(1024).decode())
+                        while data:
+                            sock.send(data)
+                            data = f.read(1024)
+                    sock.send(b'sent')
+                    print(sock.recv(1024).decode())
             if request.split()[1] == 'ser':
                 sock.send(request.encode())
                 with open(request.split('/')[-1], "wb") as f:
