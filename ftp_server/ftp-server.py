@@ -2,14 +2,15 @@ import socket
 import os
 import shutil
 '''
-pwd - показывает название рабочей директории
-ls - показывает содержимое текущей директории
-cat <filename> - отправляет содержимое файла
-mkdir <foldername> - создает папку
-rmdir <foldername> - удаляет папку
-rm <filename> - удаляет файл
-rename <oldfilename> <newfilename> - переименовывает файл
-
+pwd                                 - показывает название рабочей директории
+ls                                  - показывает содержимое текущей директории
+mkdir <foldername>                  - создает папку
+rmdir <foldername>                  - удаляет папку
+rm <filename>                       - удаляет файл
+rename <oldfilename> <newfilename>  - переименовывает файл
+exit                                - закрытие клиента
+send <filename>                     - переносит файл с клиента на сервер
+copy <filename>                     - переносит файл с сервера на клиент
 '''
 
 dirname = os.path.join(os.getcwd(), 'docs')
@@ -32,10 +33,12 @@ def process(req):
 
     r=req.split(' ')
 
-    if req == 'pwd':
+    if r[0] == 'pwd':
+
         return dirname
 
-    elif req == 'ls':
+    elif r[0] == 'ls':
+
         return '; '.join(os.listdir(dirname))
 
     elif r[0] == 'mkdir':
