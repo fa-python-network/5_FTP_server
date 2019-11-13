@@ -19,6 +19,12 @@ dirname = os.getcwd()
 
 def process(r,conn):
 	l=Logfile()
+	
+	for i in r:
+		if i=='/':
+			return('Название файла указывается без абсолютного пути')
+			
+
 	req=r.split()
 	
 
@@ -29,6 +35,7 @@ def process(r,conn):
 		pass
 
 	elif req[0] == 'mkdir':
+		
 		try:
 			path=str(os.getcwd())+'/'+req[1]
 			#print(path)

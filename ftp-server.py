@@ -24,7 +24,7 @@ while True:
     
     while True:
         request = conn.recv(1024).decode()
-        print(request)
+        
         if request == "":
             break
     
