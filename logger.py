@@ -18,27 +18,27 @@ class Logfile(object):
             print(f"{datetime.now().strftime('%Y-%m-%d %H:%M')}: {data}", file=f)
 
     def serverstart(self):
-        self.write_to_file("Connection was started  ")
+        self.write_to_file("Connection was started  ", "connection.log")
 
     def serverend(self):  
-        self.write_to_file("Connection was stopped  ")
+        self.write_to_file("Connection was stopped  ", "connection.log")
     
     def mkdir(self,obj):
-        self.write_to_file(f"{obj} was created  ")
+        self.write_to_file(f"{obj} was created  ", "operation.log")
     def rm(self,obj):
-        self.write_to_file(f"{obj} was deleted  ")
+        self.write_to_file(f"{obj} was deleted  ", "operation.log")
     
     def delete(self,obj):
-        self.write_to_file(f"{obj}  was deleted  ")
+        self.write_to_file(f"{obj}  was deleted  ", "operation.log")
     
     def rename(self,old,new):
-        self.write_to_file(f"{old} object was renamed to {new} ")
+        self.write_to_file(f"{old} object was renamed to {new} ","operation.log")
 
     def copyfromclienttoserver(self,file):
-        self.write_to_file(f"{file}  was sent from client to server  ")
+        self.write_to_file(f"{file}  was sent from client to server  ","operation.log")
 
     def copyfromservertoclient(self,file):
-        self.write_to_file(f"{file}  was sent from  server to client  ")
+        self.write_to_file(f"{file}  was sent from  server to client  ","operation.log")
 
     
 

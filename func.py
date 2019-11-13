@@ -4,9 +4,8 @@ import ftplib
 import time
 from logger import Logfile
 '''
-pwd - показывает название рабочей директории
+
 ls  - показывает содержимое текущей директории
-cat <filename> - отправляет содержимое файла
 ls f - показывает содержимое 
 mkdir <filename> - создание папки в текущей директории
 rm <filename> - удалеяет папкy в текущей директории
@@ -21,10 +20,9 @@ dirname = os.getcwd()
 def process(r,conn):
 	l=Logfile()
 	req=r.split()
-	if req[0] == 'pwd':
-		return dirname
+	
 
-	elif req[0] == 'ls':
+	if req[0] == 'ls':
 		return '; '.join(os.listdir(dirname))
 
 	elif req[0] == 'ls f':

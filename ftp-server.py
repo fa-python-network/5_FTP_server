@@ -13,10 +13,6 @@ try:
 except ValueError :
     port = 9090
 
-'''
-l=Logfile()
-l.serverstart()
-'''
 
 sock = socket.socket()
 sock.bind(('', port))
@@ -28,6 +24,7 @@ while True:
     
     while True:
         request = conn.recv(1024).decode()
+        print(request)
         if request == "":
             break
     

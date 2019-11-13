@@ -20,6 +20,9 @@ while status:
     sock.connect((HOST, port))
     l=Logfile()
     l.serverstart()
+    menu='Здравствуйте!\nВам доступны следующие функции: \n1)ls  - показывает содержимое текущей директории \n2)mkdir <filename> - создание папки в текущей директории \n4)rm <filename> - удалеяет папкy в текущей директории\n5)delete <filename> - удаляет файл в текущей директории\n6)rename <filename> <new name> - переименовывает файл/директорию в <new name>\n7)exit - отключение клиента от сервера\n8)copy.from <from> <filename> - копирует файл  с клиента (cl)/сервера (ser) (пример: copy.from cl f.txt)'
+    print(menu)
+    time.sleep(0.3)
     while s:
         request = input('>')
         #print(response)
