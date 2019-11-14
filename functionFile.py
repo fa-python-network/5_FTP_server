@@ -78,10 +78,12 @@ def process(data,conn = None, client = None):
 				conn.send(b"DONE")
 				return "File recieved"
 		else:
-			with open(req[2], "wb") as f:
+			with open(client+'/'+req[2], "wb") as f:
 				while True:
-   					data = conn.recv(1024)
-   					if data == b"DONE":
-					   	break
-   					f.write(data)
+					data = conn.recv(1024)
+					print(data)
+					if data == b"DONE":
+						print("Finish")
+						break
+					f.write(data)
 			return "File sent"

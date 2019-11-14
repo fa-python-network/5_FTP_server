@@ -62,47 +62,43 @@ class Client:
     start
     '''
     def start(self):
-        # while True:
-        #     request = input('>')
-        #     if request.lower() == "exit":
-        #         self.sock.close()
-        #         break
-        #     elif request.lower().split()[0] == "scp":
-        #         try:
-        #             if request.lower().split()[1] == "-u":
-        #                 with open(request.lower().split('/')[-1], "wb") as f:
-        #                     while True:
-        #                         data = conn.recv(1024)
-        #                         if data == b"DONE":
-        #                             break
-        #                         f.write(data)
-        #         except:
-        #             file = os.path.realpath(request.split()[2])
-        #             self.sock.send(pickle.dumps(["scp", request.split("/")[-1]]))
-        #             sleep(0.3)
-        #             with open(file, "rb") as f:
-        #                 data = f.read(1024)
-        #                 while data:
-        #                     self.sock.send(data)
-        #                     data = f.read(1024)
-        #             self.sock.send(b"DONE")
-        #     else:
-        #         self.sock.send(pickle.dumps(request.split()))
-         while self.status != 'finish':
+        while self.status != 'finish':
             if self.status:
-               if self.status == "auth":
-                   self.auth()
-               elif self.status == "passwd":
-                   self.sendPasswd()
-               elif self.status == "success":
-                   self.success()
-               elif self.status == "nameRequest":
-                   self.nameRequest()
-               else:
-                   sleep(0.1)
-                   request = input('>')
-                   if request == "exit": 
-                       self.status = "finish"
-                       break
-                   self.sock.send(pickle.dumps(request.split()))
+                if self.status == "auth":
+                    self.auth()
+                elif self.status == "passwd":
+                    self.sendPasswd()
+                elif self.status == "success":
+                    self.success()
+                elif self.status == "nameRequest":
+                    self.nameRequest()
+                else:
+                    sleep(0.1)
+                    request = input('>')
+                    if request == "exit": 
+                        self.status = "finish"
+                        break
+                    elif request.lower().split()[0] == "scp":
+                        if request.lower().split()[1] == "-u":
+                             with open(request.lower().split('/')[-1], "wb") as f:
+                                while True:
+                                    data = self.sock.recv(1024)
+                                    if data == b"DONE":
+                                        break
+                                    f.write(data)
+                        else:
+                            file = os.path.realpath(request.split()[2])
+                            self.sock.send(pickle.dumps(["scp","-s", request.split("/")[-1]]))
+                            sleep(0.5)
+                            with open(file, "rb") as f:
+                                data = f.read(1024)
+                                while data:
+                                    print(data)
+                                    self.sock.send(data)
+                                    data = f.read(1024)
+                                sleep(0.5)
+                                self.sock.send(b"DONE")
+                    else:
+                        self.sock.send(pickle.dumps(request.split()))
+                    print("Finished")
 Client()
