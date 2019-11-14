@@ -1,40 +1,108 @@
 import socket
 import os
 import pickle
-import time
+import sys
+from time import sleep
+from getpass import getpass
+from threading import Thread
 HOST = 'localhost'
-PORT = int(input("Введите порт:"))
-while True:
-    request = input('>')
-    sock = socket.socket()
-    sock.connect((HOST, PORT))
-    if request.lower() == "exit":
-        sock.close()
-        break
-    elif request.lower().split()[0] == "scp":
-        try:
-            if request.lower().split()[2] == "-u":
-                response = sock.recv(1024).decode()
-                with open(request.lower().split()[1].split('/')[-1], "wb") as f:
-                    while True:
-                        data = conn.recv(1024)
-                        if data == b"DONE":
-                            break
-                        f.write(data)
-        except:
-            file = os.path.realpath(request.split()[1])
-            sock.send(pickle.dumps(["scp", request.split("/")[-1]]))
-            time.sleep(0.3)
-            with open(file, "rb") as f:
-                data = f.read(1024)
-                while data:
-                    sock.send(data)
-                    data = f.read(1024)
-            sock.send(b"DONE")
-    else:
-        sock.send(pickle.dumps(request.split()))
+
+class Client:
+
+    '''
+    реализация init
+    '''
+    def __init__(self, port = 9090, status = None):
+        self.sock = socket.socket()
+        self.port = int(input("Введите порт:"))
+        self.name = input("Введите Ваше имя: ")
+        self.status = status
+        self.sock.connect((HOST, self.port))
+        Thread(target=self.recv).start()
+        self.start()
+
+    def nameRequest(self):
+        self.sock.send(pickle.dumps(["nameRequest",self.name]))
+        sleep(1.5)
+
+    def sendPasswd(self):
+        passwd = getpass(self.data)
+        self.sock.send(pickle.dumps(["passwd",passwd]))
+        sleep(1.5)
+
+
+    def auth(self):
+        name = input(self.data)
+        self.sock.send(pickle.dumps(["auth",name]))
+        sleep(1.5)
+
+
+    def success(self):
+        print(self.data)
+        self.status = "ready"
+
+    '''
+    Получение сообщений от сервера
+    '''
+    def recv(self):
+        while True:
+            try:
+                self.data = self.sock.recv(1024)
+                if not self.data: sys.exit(0)
+                status = pickle.loads(self.data)[0]
+                self.status = status
+                if self.status == "message":
+                    print(pickle.loads(self.data)[1])
+                else:
+                    self.data = pickle.loads(self.data)[1]
+            except OSError:
+                break
     
-    response = sock.recv(1024).decode()
-    print(response)
-    
-    sock.close()
+    '''
+    start
+    '''
+    def start(self):
+        # while True:
+        #     request = input('>')
+        #     if request.lower() == "exit":
+        #         self.sock.close()
+        #         break
+        #     elif request.lower().split()[0] == "scp":
+        #         try:
+        #             if request.lower().split()[1] == "-u":
+        #                 with open(request.lower().split('/')[-1], "wb") as f:
+        #                     while True:
+        #                         data = conn.recv(1024)
+        #                         if data == b"DONE":
+        #                             break
+        #                         f.write(data)
+        #         except:
+        #             file = os.path.realpath(request.split()[2])
+        #             self.sock.send(pickle.dumps(["scp", request.split("/")[-1]]))
+        #             sleep(0.3)
+        #             with open(file, "rb") as f:
+        #                 data = f.read(1024)
+        #                 while data:
+        #                     self.sock.send(data)
+        #                     data = f.read(1024)
+        #             self.sock.send(b"DONE")
+        #     else:
+        #         self.sock.send(pickle.dumps(request.split()))
+         while self.status != 'finish':
+            if self.status:
+               if self.status == "auth":
+                   self.auth()
+               elif self.status == "passwd":
+                   self.sendPasswd()
+               elif self.status == "success":
+                   self.success()
+               elif self.status == "nameRequest":
+                   self.nameRequest()
+               else:
+                   msg = input()
+                   if msg == "exit": 
+                       self.status = "finish"
+                       break
+                   sendM = pickle.dumps(["message",f'{self.name} > {msg}'])
+                   self.sock.send(sendM)
+Client()
