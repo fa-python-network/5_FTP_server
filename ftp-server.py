@@ -74,8 +74,7 @@ class FTPServer:
 	'''
 	Авторизация пользователя
 	'''		
-	def authUser(self,conn):
-		print("msms")
+	def checkUser(self, addr, conn):
 		try:
 			open(self.users).close()
 		except FileNotFoundError:
@@ -85,16 +84,28 @@ class FTPServer:
 				conn.send(pickle.dumps(["nameRequest",""]))
 				client = pickle.loads(conn.recv(1024))[1]
 				users = json.load(f)
-				name = users[client]
-				conn.send(pickle.dumps(["passwd","Введите свой пароль: "]))
-				passwd = pickle.loads(conn.recv(1024))[1]
-				conn.send(pickle.dumps(["success",f"Здравствуйте, {client}"])) if self.checkPasswrd(passwd,name['password']) else self.checkUser(addr,conn)
+				try:
+					name = users[client]
+					conn.send(pickle.dumps(["passwd","Введите свой пароль: "]))
+					passwd = pickle.loads(conn.recv(1024))[1]
+					conn.send(pickle.dumps(["success",f"Здравствуйте, {client}"])) if self.checkPasswrd(passwd,name['password']) else self.checkUser(addr,conn)
+				except: self.unknownUser(conn,users)
 			except:
 				conn.send(pickle.dumps(["nameRequest",""]))
 				client = pickle.loads(conn.recv(1024))[1]
-				conn.send(pickle.dumps(["passwd","Я тебя не знаю, но ведите свой пароль: "]))
+				conn.send(pickle.dumps(["passwd","Я тебя не знаю, введите свой пароль: "]))
 				passwd = self.generateHash(pickle.loads(conn.recv(1024))[1])
 				conn.send(pickle.dumps(["success",f"Здравствуйте, {client}"]))
 				with open(self.users, "w", encoding="utf-8") as f:
 					json.dump({client : {'password': passwd} },f)
+	def unknownUser(self,conn, users):
+		conn.send(pickle.dumps(["nameRequest",""]))
+		client = pickle.loads(conn.recv(1024))[1]
+		conn.send(pickle.dumps(["passwd","Я тебя не знаю, ведите свой пароль: "]))
+		passwd = self.generateHash(pickle.loads(conn.recv(1024))[1])
+		conn.send(pickle.dumps(["success",f"Здравствуйте, {client}"]))
+		users[client] = {'password': passwd}
+		print(users)
+		with open(self.users, "w", encoding="utf-8") as f:
+			json.dump(users,f)
 FTPServer()
