@@ -180,6 +180,8 @@ class T(threading.Thread):
         # сейчас задаим текущую директорию и директорию, из которой не может уходить пользователь
         self.dir = os.path.join(os.getcwd(), name)
         self.now_dir = os.path.join(os.getcwd(), name)
+        mkdir(name, os.getcwd())
+
 
         while True:
             request = recv_msg(self.conn)
