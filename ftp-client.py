@@ -1,4 +1,4 @@
-import socket, os
+import socket, os	#работаем с сокетом + работа с модулем os для очистки экрана консоли
 
 '''
 	pwd 								- текущая директория
@@ -18,15 +18,15 @@ import socket, os
 '''
 
 
-HOST = 'localhost'
+HOST = 'localhost'		#параметры подключения
 PORT = 6666
 
 try:
-	os.system('clear')
+	os.system('clear')		#очистка окна консоли (кроссплатформенно)
 	os.system('cls')
 except:
 	pass
-print('*****************************************************************\n')
+print('*****************************************************************\n')		#приветствие
 print('*  FTP-EMULATOR КЛИЕНТ. РАБОТА С ФАЙЛАМИ НА УДАЛЕННОМ СЕРВЕРЕ.  *\n')
 print('*****************************************************************\n')
 print('*  ОБРАТИТЕ ВНИМАНИЕ НА ДВЕ УДОБНЫЕ КОМАНДЫ:                    *\n')
@@ -34,26 +34,26 @@ print('*  clear - очистить окно консоли, exit - выйти, h
 print('*****************************************************************\n')
 print('\n\n\n')
 
-print('Введите логин:')
+print('Введите логин:')		#получаем данные для входа. Они каждый раз отправляются на сервер как токены
 login = input()
 print('Введите пароль:')
 password = input()
 
-while True:
+while True:		#постоянно получаем команды от пользователя
 	request = input('>')
 
-	if request == 'exit':
+	if request == 'exit':		#выйти из клиента
 		print('Клиент закрыт')
 		break
 
-	elif request == 'clear':
+	elif request == 'clear':		#очистить экран
 		try:
 			os.system('clear')
 			os.system('cls')
 		except:
 			pass
 
-	elif request == 'help':
+	elif request == 'help':		#помощь
 		print('''
 pwd - текущая директория
 ls  - список файлов
@@ -71,18 +71,18 @@ clear - очистить окно консоли
 help - открыть помощь
 ''')
 
-	else:
+	else:		#а здесь команды, которые подразумевают отправку данных на сервер, то есть они не выполняются чисто локально как те, что были выше
 		sock = socket.socket()
 		sock.connect((HOST, PORT))
 
-		sock.send(f'{login}->{password}'.encode())
+		sock.send(f'{login}->{password}'.encode())		#отправляем условный токен
 		sansw = sock.recv(1024)
-		if sansw.decode() == 'allowed!':
+		if sansw.decode() == 'allowed!':		#если логин и пароль верные
 
-			if request.split(' ')[0] == 'push':
+			if request.split(' ')[0] == 'push':			#отдельная логика работы команды по отправке файла на сервер из текущей директории
 				request+=' _eoc_'
-				if request.split(' ')[1] != '_eoc_':
-					if '..' in request.split(' ')[1] or '/' in request.split(' ')[1] or '\\' in request.split(' ')[1]:
+				if request.split(' ')[1] != '_eoc_':		#проверка на наличие флага конца команды
+					if '..' in request.split(' ')[1] or '/' in request.split(' ')[1] or '\\' in request.split(' ')[1]:		#защита от лазания по ФС
 						print('Not allowed using .. / \\ in complex path!')
 					else:
 						if os.path.exists(request.split(' ')[1]):
@@ -100,13 +100,13 @@ help - открыть помощь
 				else:
 					print('filename required!')
 
-			else:
+			else:		#если это остальные серверные команды
 
 				sock.send(request.encode())
 
 				response = sock.recv(1024).decode()
 
-				if request.split(' ')[0] == 'get':
+				if request.split(' ')[0] == 'get':		#корректив для команды по получению файла с удаленного сервера
 					if response.split('-!-!-!->')[0] == 'success':
 						with open(request.split(' ')[1],'w') as f:
 							f.write(response.split('-!-!-!->')[1])
@@ -118,6 +118,6 @@ help - открыть помощь
 					print(response)
 
 		else:
-			print('Invalid login or password! Restart your client and enter valid data!')
+			print('Invalid login or password! Restart your client and enter valid data!')		#если логин или пароль ошибочные
 
-		sock.close()
+		sock.close()		#после каждой команды рвем соединение

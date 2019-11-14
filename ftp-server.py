@@ -1,8 +1,8 @@
-import socket
-import os
-import shutil
-import datetime
-import pickle
+import socket		#сам сокет
+import os			#работа с ФС
+import shutil		#доп. работа с ФС: удаление дерева каталогов
+import datetime		#получение текущего времени для логов
+import pickle		#хранение базы клиентов
 
 
 '''
@@ -19,7 +19,7 @@ import pickle
 	push <filename>						- загрузить на сервер файл
 '''
 
-def process(req):
+def process(req):		#функция, которая каждый раз выполняет задачу клиента и возвращает результат операции
 	global conn
 	global username
 	global dirname																									#текущая папка
@@ -228,13 +228,13 @@ sock.bind(('', PORT))
 sock.listen(5)
 
 clientsfile = 'clients.pickle'
-clients = {}
-dirname = ''
-lastlogged = ''
+clients = {}		#база клиентов
+dirname = ''		#текущая папка в ФС
+lastlogged = ''		#логин последнего пользователя
 
 
 
-if (os.stat(clientsfile).st_size != 0):
+if (os.stat(clientsfile).st_size != 0):		#а пуста ли база?
 	with open(clientsfile,'rb') as f:
 		clients = pickle.load(f)
 else:
@@ -246,28 +246,28 @@ print(clients)
 logfile = 'access.log'
 print('Сервер запущен!')
 
-while True:
+while True:		#всегда слушаем клиентов
 	conn, addr = sock.accept()
 
-	userdata = conn.recv(1024).decode()
+	userdata = conn.recv(1024).decode()		#получили логин и пароль от клиента
 
-	if userdata.split('->')[0] in clients.keys():
-		if clients[userdata.split('->')[0]] == userdata.split('->')[1]:
-			conn.send('allowed!'.encode())
-			username = userdata.split('->')[0]
-			if not dirname or (username not in dirname and username != 'admin') or lastlogged != username:
+	if userdata.split('->')[0] in clients.keys():		#если он есть в базе
+		if clients[userdata.split('->')[0]] == userdata.split('->')[1]:		#если пароль верный
+			conn.send('allowed!'.encode())		#отправляем флаг, что успешно вошли
+			username = userdata.split('->')[0]	#запомним логин
+			if not dirname or (username not in dirname and username != 'admin') or lastlogged != username:		#отвечает за запоминание текущего местоположения пользователя в ФС
 				dirname = os.path.join(os.getcwd(), 'docs')
 				dirname = os.path.join(dirname,userdata.split('->')[0])
 				if username != 'admin':
-					dirlevel = 0
+					dirlevel = 0		#уровень глубины местонахождения пользователя в ФС, меньше 0 значение запрещено -> поднялся вверх = -1, опустился вниз (зашёл в подпапку) = +1
 				else:
-					dirlevel = 1
+					dirlevel = 1		#админ может подняться на один уровень выше всех остальных - это папка со всеми пользователями docs
 			lastlogged = username
 			request = conn.recv(1024).decode()
 			with open(logfile,'a') as f:
-				f.write(datetime.datetime.today().strftime('%Y-%m-%d %H:%M')+' - '+request+'\n')
+				f.write(datetime.datetime.today().strftime('%Y-%m-%d %H:%M')+' - '+request+'\n')		#дополним лог
 
-			response = process(request)
+			response = process(request)		#посылаем команду функции и ждем ответ
 			conn.send(response.encode())
 
 			conn.close()
