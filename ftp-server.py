@@ -1,35 +1,111 @@
-import socket
-import os
-'''
-pwd - показывает название рабочей директории
-ls - показывает содержимое текущей директории
-cat <filename> - отправляет содержимое файла
-'''
+import shutil
 
-dirname = os.path.join(os.getcwd(), 'docs')
+"""
+pwd - сервер вернёт название рабочей директории
+ls - сервер вернёт список файлов в рабочей директории
+cat - сервер вернёт содержимое файла
+mkdir - сервер создаёт директорию с указанным именем
+rmdir - сервер удаляет директорию с указанным именем
+rm - сервер удаляет файл с указанным именем
+touch - сервер создаёт файл с указанным именем
+rename - сервер переименновывает файл с указанным именем 
+send - сервер ПОЛУЧАЕТ файл от клинета
+recv - сервер ОТПРАВЛЯЕТ файл клинету
+(называть команды такими именами удобнее для клиента)
+"""
 
-def process(req):
-    if req == 'pwd':
-        return dirname
-    elif req == 'ls':
-        return '; '.join(os.listdir(dirname))
-    return 'bad request'
+
+def pwd():
+    return os.getcwd()
 
 
-PORT = 6666
+def ls():
+    return ' '.join(os.listdir(os.getcwd()))
+
+
+def mkdir(name):
+    path = pwd() + '/' + name
+    os.mkdir(path)
+    return f'папка {name} успешно создана'
+
+
+def rmdir(name):
+    path = pwd() + '/' + name
+    shutil.rmtree(path)
+    return f'папка {name} успешно удалена'
+
+
+def rm(name):
+    path = pwd() + '/' + name
+    os.remove(path)
+    return f'файл {name} успешно удалён'
+
+
+def touch(name):
+    with open(name, 'w') as file:
+        pass
+    return f'файл {name} успешно создан'
+
+
+def rename(name1, name2):
+    os.rename(name1, name2)
+    return f'файл {name1} успешно переименнован в {name2}'
+
+
+def send(name, conn):
+    length = conn.recv(1024).decode()
+    text = conn.recv(int(length)).decode()
+    with open(name, 'w') as file:
+        file.write(text)
+    return f'получен файл {name}'
+
+
+def recv(name, conn):
+    with open(name, 'r') as file:
+        text = file.read()
+    conn.send(str(len(text)).encode())
+    conn.send(text.encode())
+    return f'отправлен файл {name}'
+
+
+def process(req, args=None):
+    f = commands[req]
+    if args:
+        return f(*args)
+    return f()
+
+
+commands = {'pwd': pwd, 'ls': ls, 'mkdir': mkdir, 'rmdir': rmdir, 'rm': rm, 'touch': touch, 'rename': rename,
+            'send': send, 'recv': recv}
+
+PORT = 9090
 
 sock = socket.socket()
 sock.bind(('', PORT))
 sock.listen()
-print("Прослушиваем порт", PORT)
+print(f"Слушаем порт {PORT}")
 
 while True:
     conn, addr = sock.accept()
-    
-    request = conn.recv(1024).decode()
-    print(request)
-    
-    response = process(request)
-    conn.send(response.encode())
+    print(addr)
+    while True:
 
-conn.close()
+        request = conn.recv(1024).decode()
+        request = request.split()
+        if not request:
+            break
+        func = request[0]
+        if len(request) > 0:
+            args = request[1:]
+        else:
+            args = None
+        if args:
+            if func in ['send', 'recv']:
+                args.append(conn)
+            response = process(func, args)
+        else:
+            response = process(func)
+        conn.send(response.encode())
+    conn.close()
+
+sock.close()
