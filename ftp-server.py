@@ -61,20 +61,20 @@ class FTPServer:
 	Прослушка пользователя
 	'''
 	def listenToFTPClient(self,conn,addr):
-		self.authUser(conn)
+		client = self.authUser(conn)
 		while True:
 			request = conn.recv(1024)
 			if not request:
 				conn.close()
 				break
 			
-			response = process(request,conn)
+			response = process(request,conn,client)
 			conn.send(response.encode())
 
 	'''
 	Авторизация пользователя
 	'''		
-	def checkUser(self, addr, conn):
+	def authUser(self, conn) -> str:
 		try:
 			open(self.users).close()
 		except FileNotFoundError:
@@ -89,23 +89,26 @@ class FTPServer:
 					conn.send(pickle.dumps(["passwd","Введите свой пароль: "]))
 					passwd = pickle.loads(conn.recv(1024))[1]
 					conn.send(pickle.dumps(["success",f"Здравствуйте, {client}"])) if self.checkPasswrd(passwd,name['password']) else self.checkUser(addr,conn)
-				except: self.unknownUser(conn,users)
+				except: self.unknownUser(conn,users,client)
 			except:
-				conn.send(pickle.dumps(["nameRequest",""]))
-				client = pickle.loads(conn.recv(1024))[1]
-				conn.send(pickle.dumps(["passwd","Я тебя не знаю, введите свой пароль: "]))
-				passwd = self.generateHash(pickle.loads(conn.recv(1024))[1])
-				conn.send(pickle.dumps(["success",f"Здравствуйте, {client}"]))
-				with open(self.users, "w", encoding="utf-8") as f:
-					json.dump({client : {'password': passwd} },f)
-	def unknownUser(self,conn, users):
+				self.unknownUser(conn, None, client, True)
+		return client
+					
+	def unknownUser(self,conn, users, client, isJSONisNill = False):
 		conn.send(pickle.dumps(["nameRequest",""]))
 		client = pickle.loads(conn.recv(1024))[1]
-		conn.send(pickle.dumps(["passwd","Я тебя не знаю, ведите свой пароль: "]))
+		conn.send(pickle.dumps(["passwd","Я тебя не знаю, введите свой пароль: "]))
 		passwd = self.generateHash(pickle.loads(conn.recv(1024))[1])
 		conn.send(pickle.dumps(["success",f"Здравствуйте, {client}"]))
-		users[client] = {'password': passwd}
-		print(users)
-		with open(self.users, "w", encoding="utf-8") as f:
-			json.dump(users,f)
+		if isJSONisNill:
+			with open(self.users, "w", encoding="utf-8") as f:
+					json.dump({client : {'password': passwd} },f)
+		else:
+			users[client] = {'password': passwd}
+			with open(self.users, "w", encoding="utf-8") as f:
+				json.dump(users,f)
+		self.createUserDirectory(client)
+
+	def createUserDirectory(self, name):
+		process(pickle.dumps(["mkdir", f"{name}"]))
 FTPServer()

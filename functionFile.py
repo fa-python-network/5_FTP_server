@@ -2,10 +2,9 @@ import os
 import pickle
 import socket
 import time
-dirname = os.getcwd()
-
-def process(data,conn):
+def process(data,conn = None, client = None):
 	req=pickle.loads(data)
+	dirname = f"{os.getcwd()}/{client}"
 	if req[0] == 'pwd':
 		return dirname
 
@@ -17,7 +16,7 @@ def process(data,conn):
 
 	elif req[0] == 'mkdir':
 		try:
-			path=str(os.getcwd())+'/'+req[1]
+			path=dirname+'/'+req[1]
 			try:
 				os.mkdir(path)
 				p=path+' has been created'
@@ -30,8 +29,7 @@ def process(data,conn):
 	elif req[0]== 'rm':
 		try:
 			try:
-				path= os.path.abspath(req[1])
-				os.rmdir(path,  dir_fd=None)
+				os.rmdir(dirname+'/'+req[1],  dir_fd=None)
 				return 'The directory has been deleted'
 			except FileNotFoundError:
 				return 'No such file or directory'
@@ -42,8 +40,7 @@ def process(data,conn):
 	elif req[0] == 'delete':
 		try:
 			try:
-				path= os.path.abspath(req[1])
-				os.remove(path, dir_fd = None)
+				os.remove(dirname+'/'+req[1], dir_fd = None)
 				return 'The file has been deleted'
 			except FileNotFoundError:
 				return 'No such file or directory'
@@ -54,9 +51,8 @@ def process(data,conn):
 	elif req[0] == 'rename':
 		try:
 				try:
-					path= os.path.abspath(req[1])
 					try:
-						 os.rename(req[1], req[2], src_dir_fd=None, dst_dir_fd=None)
+						 os.rename(dirname+'/'+req[1], req[2], src_dir_fd=None, dst_dir_fd=None)
 						 return 'The name has been changed'
 					except IndexError:
 						return "You don't wrote ma,e"

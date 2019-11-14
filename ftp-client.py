@@ -49,12 +49,12 @@ class Client:
             try:
                 self.data = self.sock.recv(1024)
                 if not self.data: sys.exit(0)
-                status = pickle.loads(self.data)[0]
-                self.status = status
-                if self.status == "message":
-                    print(pickle.loads(self.data)[1])
-                else:
+                try:
+                    status = pickle.loads(self.data)[0]
+                    self.status = status
                     self.data = pickle.loads(self.data)[1]
+                except:
+                    print(self.data.decode())
             except OSError:
                 break
     
@@ -99,10 +99,10 @@ class Client:
                elif self.status == "nameRequest":
                    self.nameRequest()
                else:
-                   msg = input()
-                   if msg == "exit": 
+                   sleep(0.1)
+                   request = input('>')
+                   if request == "exit": 
                        self.status = "finish"
                        break
-                   sendM = pickle.dumps(["message",f'{self.name} > {msg}'])
-                   self.sock.send(sendM)
+                   self.sock.send(pickle.dumps(request.split()))
 Client()
