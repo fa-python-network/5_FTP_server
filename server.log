@@ -1,0 +1,89 @@
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\docs) ошибки: -
+выполнено: ls(C:\Users\V\PycharmProjects\ftp server\docs) ошибки: -
+выполнено: mkdir(C:\Users\V\PycharmProjects\ftp server\docs/test1.txt) ошибки: - 
+выполнено: rmdir(C:\Users\V\PycharmProjects\ftp server\docs\test1.txt) ошибки: -
+выполнено: mkdir(C:\Users\V\PycharmProjects\ftp server\docs\e) ошибки: - 
+выполнено: mkdir(C:\Users\V\PycharmProjects\ftp server\docs\e) ошибки: файл(директори€) уже существует 
+выполнено: ls(C:\Users\V\PycharmProjects\ftp server\docs) ошибки: -
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\docs\e) ошибки: -
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\docs\e) ошибки: -
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\docs\e\..) ошибки: -
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\docs\e\..) ошибки: -
+выполнено: pwd(C:\docs) ошибки: -
+выполнено: ls(C:\docs) ошибки: -
+выполнено: ls(C:\docs) ошибки: -
+выполнено: ls(C:\Users\V\PycharmProjects\ftp server\docs) ошибки: -
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\docs) ошибки: -
+закрыто соединение 
+ 
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\docs) ошибки: -
+закрыто соединение 
+ 
+соединение установлено 
+ 
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\docs) ошибки: -
+соединение установлено 
+ 
+закрыто соединение 
+ 
+2019-11-14 19:37:38.387930 соединение установлено 
+ 
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\docs) ошибки: -
+2019-11-14 19:37:59.026110 соединение установлено 
+ 
+2019-11-14 19:37:59.032111 закрыто соединение 
+ 
+ƒобавлен пользователь ¬ика
+2019-11-14 19:41:39.487637 соединение установлено 
+ 
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\docs) ошибки: -
+2019-11-14 19:41:42.590815 соединение установлено 
+ 
+2019-11-14 19:41:42.592815 закрыто соединение 
+ 
+¬ход выполнен успешно: пароль верный.
+ѕодключилс€ известный пользователь
+2019-11-14 19:45:41.604311 соединение установлено 
+ 
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\docs) ошибки: -
+2019-11-14 19:52:44.954499 соединение установлено 
+ 
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\docs) ошибки: -
+2019-11-14 19:54:47.141487 соединение установлено 
+ 
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\Vika) ошибки: -
+2019-11-14 19:56:39.981926 соединение установлено 
+ 
+2019-11-14 19:57:20.474242 соединение установлено 
+ 
+2019-11-14 19:58:29.903213 соединение установлено 
+ 
+2019-11-14 20:05:21.117611 соединение установлено 
+ 
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\Vika) ошибки: -
+2019-11-14 20:05:24.108782 соединение установлено 
+ 
+2019-11-14 20:06:28.554407 соединение установлено 
+ 
+2019-11-14 20:08:31.061293 соединение установлено 
+ 
+2019-11-14 20:08:53.400543 соединение установлено 
+ 
+2019-11-14 20:11:19.249793 соединение установлено 
+ 
+2019-11-14 20:11:37.650770 соединение установлено 
+ 
+2019-11-14 20:11:56.978875 соединение установлено 
+ 
+выполнено: mkdir(C:\Users\V\PycharmProjects\ftp server\Vika\test) ошибки: - 
+2019-11-14 20:11:59.555022 соединение установлено 
+ 
+2019-11-14 20:13:12.892125 соединение установлено 
+ 
+выполнено: pwd(C:\Users\V\PycharmProjects\ftp server\Vika) ошибки: -
+2019-11-14 20:13:14.737230 соединение установлено 
+ 
+2019-11-14 20:19:10.748468 соединение установлено 
+ 
+2019-11-14 20:19:13.166607 соединение установлено 
+ 
