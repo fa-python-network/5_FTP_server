@@ -9,6 +9,11 @@ def sendfile(name, who):
     who.send('end'.encode())
 
 def checkfile(name, who):
-    with open (name, 'w') as file:
-        file.write(who.recv(1024).decode() + '\n')
-        who.send('next'.encode())
+    while True:
+        msg = who.recv(1024).decode()
+        if msg == 'end':
+            break
+        else:
+            with open (name, 'a') as file:
+                file.write(msg)
+                who.send('next'.encode())
