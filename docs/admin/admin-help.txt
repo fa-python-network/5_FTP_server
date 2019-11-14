@@ -1,0 +1,2 @@
+If you want to add a new user: useradd <login>
+If you want to remove a user: userdel <login>

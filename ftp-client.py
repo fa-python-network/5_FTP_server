@@ -74,7 +74,7 @@ help - открыть помощь
 	else:
 		sock = socket.socket()
 		sock.connect((HOST, PORT))
-		
+
 		sock.send(f'{login}->{password}'.encode())
 		sansw = sock.recv(1024)
 		if sansw.decode() == 'allowed!':
@@ -105,6 +105,7 @@ help - открыть помощь
 				sock.send(request.encode())
 
 				response = sock.recv(1024).decode()
+
 				if request.split(' ')[0] == 'get':
 					if response.split('-!-!-!->')[0] == 'success':
 						with open(request.split(' ')[1],'w') as f:
@@ -115,7 +116,7 @@ help - открыть помощь
 
 				else:
 					print(response)
-					
+
 		else:
 			print('Invalid login or password! Restart your client and enter valid data!')
 

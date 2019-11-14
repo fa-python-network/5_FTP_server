@@ -19,18 +19,19 @@ import pickle
 	push <filename>						- загрузить на сервер файл
 '''
 
-dirname = os.path.join(os.getcwd(), 'docs')
-dirlevel = 0
-
 def process(req):
 	global conn
+	global username
 	global dirname																									#текущая папка
 	global dirlevel																									#уровень в файловой системе, чтобы не вылезти из дозволенных границ
 	req = req + ' _eoc_'																							#флаг окончания команды
 	if req.split(' ')[0] == 'pwd':																					#текущая директория
-		if not dirname.split('docs')[1]:
-			return '\\'
-		return dirname.split('docs')[1]
+		if username != 'admin':
+			if not dirname.split(username)[1]:
+				return '\\'
+			return dirname.split(username)[1]
+		else:
+			return dirname
 
 	elif req.split(' ')[0] == 'ls':																					#список файлов
 		return '; '.join(os.listdir(dirname))
@@ -182,6 +183,40 @@ def process(req):
 			return 'File uploaded!'
 
 
+	elif req.split(' ')[0] == 'useradd':																				#создать нового пользователя
+		if username == 'admin':
+			if req.split(' ')[1] != '_eoc_' and req.split(' ')[2] != '_eoc_':
+				if not os.path.exists(os.path.join(os.getcwd(),'docs',req.split(' ')[1])):
+					os.mkdir(os.path.join(os.getcwd(),'docs',req.split(' ')[1]),777)
+					clients.update({req.split(' ')[1]:req.split(' ')[2]})
+					with open(clientsfile,'wb') as f:
+						pickle.dump(clients,f)
+					return 'DONE!'
+				else:
+					return 'user already exists!'
+			else:
+				return 'empty username or password!'
+		else:
+			return 'You are not admin!'
+
+
+	elif req.split(' ')[0] == 'userdel':																				#удалить пользователя
+		if username == 'admin':
+			if req.split(' ')[1] != '_eoc_':
+				if os.path.exists(os.path.join(os.getcwd(),'docs',req.split(' ')[1])):
+					shutil.rmtree(os.path.join(os.getcwd(),'docs',req.split(' ')[1]))
+					del clients[req.split(' ')[1]]
+					with open(clientsfile,'wb') as f:
+						pickle.dump(clients,f)
+					return 'DONE!'
+				else:
+					return 'user does not exist!'
+			else:
+				return 'empty username!'
+		else:
+			return 'You are not admin!'
+
+
 
 	return 'bad request'																							#неправильный запрос
 
@@ -194,6 +229,10 @@ sock.listen(5)
 
 clientsfile = 'clients.pickle'
 clients = {}
+dirname = ''
+lastlogged = ''
+
+
 
 if (os.stat(clientsfile).st_size != 0):
 	with open(clientsfile,'rb') as f:
@@ -203,25 +242,34 @@ else:
 
 print('База клиентов:')
 print(clients)
-	
+
 logfile = 'access.log'
 print('Сервер запущен!')
 
 while True:
 	conn, addr = sock.accept()
-	
+
 	userdata = conn.recv(1024).decode()
-	
+
 	if userdata.split('->')[0] in clients.keys():
 		if clients[userdata.split('->')[0]] == userdata.split('->')[1]:
 			conn.send('allowed!'.encode())
+			username = userdata.split('->')[0]
+			if not dirname or (username not in dirname and username != 'admin') or lastlogged != username:
+				dirname = os.path.join(os.getcwd(), 'docs')
+				dirname = os.path.join(dirname,userdata.split('->')[0])
+				if username != 'admin':
+					dirlevel = 0
+				else:
+					dirlevel = 1
+			lastlogged = username
 			request = conn.recv(1024).decode()
 			with open(logfile,'a') as f:
 				f.write(datetime.datetime.today().strftime('%Y-%m-%d %H:%M')+' - '+request+'\n')
 
 			response = process(request)
 			conn.send(response.encode())
-			
+
 			conn.close()
 		else:
 			conn.send('invalid'.encode())
