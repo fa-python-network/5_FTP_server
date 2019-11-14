@@ -5,9 +5,13 @@ import hashlib
 
 HOST = "localhost"
 PORT = int(input("Введите номер порта"))
+global userdir
+global current_user
 userdir = os.path.join(os.getcwd(), "docs")
+current_user=""
 
 def verify_delete(path):
+    global userdir
     deltype=tuple()
     fullpath=str()
     if os.path.isabs(path):
@@ -39,22 +43,23 @@ def check_user(username,file="users.txt"):
     finally:
         user_exists=False
         for user in user_list: 
-            if username==user[1]: # если пользователь существует, спросить пароль и попробовать залогиниться
-                entered_password=getpass.getpass("Введите пароль: ")
-                while not log_in_user(username,entered_password):
-                    log_in_successful=log_in_user(username, entered_password)
+            if username==user[0]: # если пользователь существует, спросить пароль и попробовать залогиниться
                 user_exists=True
+                while True:
+                    entered_password=getpass.getpass("Введите пароль: ")
+                    log_in_successful=log_in_user(user, entered_password)
+                    if log_in_successful: break
                 break
         if not(user_exists): # если пользователя не существует, добавить
-            name=input("Введите имя пользователя: ")
             password=getpass.getpass("Введите пароль: ")
-            add_user(name, password, file)
-            log_in_successful=True
-    if log_in_successful:
-        setup_user(username)
-    return "Пользователь" + username + "вошёл в систему"
+            add_user(username, password, file)
+    setup_user(username)
+
 
 def setup_user(user):
+    """Сделать папку пользователя текущей userdir и польхователя текущим пользователем """
+    global userdir
+    global current_user
     fullpath=os.path.join(os.getcwd(), user)
     if not os.path.exists(fullpath):
         os.mkdir(fullpath)
@@ -82,8 +87,7 @@ def create_user_list(file="users.txt"):
             
 def log_in_user(user,entered_password):
     """Вход пользователя с паролем"""
-    if(encode(entered_password)==user[2].strip()): #шифрование пароля и сравнение с паролем из файла
-        print("Пользователь {} вошёл в систему".format(user[0]))
+    if(encode(entered_password)==user[1].strip()): #шифрование пароля и сравнение с паролем из файла
         return True
     else:
         print("Неверный пароль!")
@@ -107,8 +111,7 @@ while True:
         else:
             break
     if request.split()[0]=="login":
-        pass
-        #sock.send(check_user(request.split()[1].encode())
+        check_user(request.split()[1])
         
     sock.send(request.encode())
     
