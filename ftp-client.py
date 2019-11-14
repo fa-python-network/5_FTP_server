@@ -80,7 +80,8 @@ class Client:
                         break
                     elif request.lower().split()[0] == "scp":
                         if request.lower().split()[1] == "-u":
-                             with open(request.lower().split('/')[-1], "wb") as f:
+                            self.sock.send(pickle.dumps([request.split()]))
+                            with open(request.lower().split('/')[-1], "wb") as f:
                                 while True:
                                     data = self.sock.recv(1024)
                                     if data == b"DONE":
@@ -93,12 +94,10 @@ class Client:
                             with open(file, "rb") as f:
                                 data = f.read(1024)
                                 while data:
-                                    print(data)
                                     self.sock.send(data)
                                     data = f.read(1024)
                                 sleep(0.5)
                                 self.sock.send(b"DONE")
                     else:
                         self.sock.send(pickle.dumps(request.split()))
-                    print("Finished")
 Client()

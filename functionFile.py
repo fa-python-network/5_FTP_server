@@ -81,7 +81,6 @@ def process(data,conn = None, client = None):
 			with open(client+'/'+req[2], "wb") as f:
 				while True:
 					data = conn.recv(1024)
-					print(data)
 					if data == b"DONE":
 						print("Finish")
 						break
