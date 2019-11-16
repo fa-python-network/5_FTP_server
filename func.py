@@ -6,7 +6,6 @@ from logger import Logfile
 '''
 
 ls  - показывает содержимое текущей директории
-ls f - показывает содержимое 
 mkdir <filename> - создание папки в текущей директории
 rm <filename> - удалеяет папкy в текущей директории
 delete <filename> - удаляет файл в текущей директории
@@ -18,33 +17,37 @@ copy.from <from> <filename> - копирует файл  с клиента (cl)/
 dirname = os.getcwd()
 
 def process(r,conn):
-	l=Logfile()
-	
-	for i in r:
-		if i=='/':
-			return('Название файла указывается без абсолютного пути')
-		
-			
-
+	#print(os.getcwd())
+	log=Logfile()
+	# for i in r:
+	# 	if i=='/':
+	# 		return('Название файла указывается без абсолютного пути')
 	req=r.split()
+	
+        
+	
 	
 
 	if req[0] == 'ls':
 		return '; '.join(os.listdir(dirname))
 
-	elif req[0] == 'ls f':
-		pass
+	
 
 	elif req[0] == 'mkdir':
-		
 		try:
 			path=str(os.getcwd())+'/'+req[1]
 			#print(path)
 		
 			try:
+				th = os.getcwd()
+				t=th.split('/')[-1]
+				re = os.path.realpath(r.split()[1])
+				re=re.split('/')[-2]
+				if re != t:
+					return('Отказано в доступе')
 				os.mkdir(path)
-				p=path+' has been created'
-				l.mkdir(req[1])
+				p=req[1]+' has been created'
+				log.mkdir(req[1])
 				return p
 			except FileExistsError:
 				return 'This path is already existed'
@@ -55,9 +58,16 @@ def process(r,conn):
 		try:
 			try:
 				path= os.path.abspath(req[1])
-				os.rmdir(path,  dir_fd=None)
-				l.rm(req[1])
-				return 'The directory has been deleted'
+				th = os.getcwd()
+				t=th.split('/')[-1]
+				re = os.path.realpath(r.split()[1])
+				re=re.split('/')[-2]
+				if re == t:
+					os.rmdir(path,  dir_fd=None)
+					log.rm(req[1])
+					return 'The directory has been deleted'
+				return('Отказано в доступе')
+				
 			except FileNotFoundError:
 				return 'No such file or directory'
 			
@@ -68,9 +78,16 @@ def process(r,conn):
 		try:
 			try:
 				path= os.path.abspath(req[1])
-				os.remove(path, dir_fd = None)
-				l.delete(req[1])
-				return 'The file has been deleted'
+				th = os.getcwd()
+				t=th.split('/')[-1]
+				re = os.path.realpath(r.split()[1])
+				re=re.split('/')[-2]
+				if re == t :
+					os.remove(path, dir_fd = None)
+					log.delete(req[1])
+					return 'The file has been deleted'
+				return('Отказано в доступе')
+				
 			except FileNotFoundError:
 				return 'No such file or directory'
 			
@@ -83,11 +100,12 @@ def process(r,conn):
 					path= os.path.abspath(req[1])
 					try:
 						 os.rename(req[1], req[2], src_dir_fd=None, dst_dir_fd=None)
-						 l.rename(req[1],req[2])
+						 
+						 log.rename(req[1],req[2])
 						 return 'The name has been changed'
 					except IndexError:
 						return 'Вы не ввели новое название'
-				except FileNotFoundError:
+				except :
 					return 'No such file or directory'
 
 
@@ -95,12 +113,12 @@ def process(r,conn):
 			return 'Вы не ввели название файла'
 	
 	elif req[0] == 'exit':
-		l.serverend()
+		
+		
 		return 'Disconnected'
 
 
 	elif req[0] == 'copy.from':
-		
 		if req[1] == 'cl':
 			try:
 				with open(req[2], "wb") as f:
@@ -109,8 +127,9 @@ def process(r,conn):
 						if data == b'sent':
 							break
 						f.write(data)
+					log.copyfromclienttoserver(req[2])
 					return 'Файл отправлен'
-				l.copyfromclienttoserver(req[2])
+				
 			except IndexError:
 				return 'Вы не ввели название файла'
 
@@ -125,8 +144,9 @@ def process(r,conn):
 						data = f.read(1024)
 					time.sleep(3)
 					conn.send(b'sent')
+					log.copyfromservertoclient(req[2])
 					return 'Файл принят'
-				l.copyfromservertoclient(req[2])
+				
 			except IndexError:
 				return 'Вы не ввели название файла'
 		

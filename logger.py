@@ -11,16 +11,17 @@ class Logfile(object):
         
 
         if file_name is None:
+            server = "server"
             file_name = self.file_name
     
         with open(file_name, "a", encoding="utf-8") as f:
             print(f"{datetime.now().strftime('%Y-%m-%d %H:%M')}: {data}", file=f)
 
-    def serverstart(self):
-        self.write_to_file("Connection was started  ", "connection.log")
+    def serverstart(self,l):
+        self.write_to_file(f"{l} was connected  ", "connection.log")
 
-    def serverend(self):  
-        self.write_to_file("Connection was stopped  ", "connection.log")
+    def serverend(self,l):  
+        self.write_to_file(f"{l} was disconnected  ", "connection.log")
     
     def mkdir(self,obj):
         self.write_to_file(f"{obj} was created  ", "operation.log")
