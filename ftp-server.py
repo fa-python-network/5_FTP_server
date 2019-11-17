@@ -66,7 +66,7 @@ def process(req, root):
                 return 'Файл удален.'
             elif 'newad' in req and root:
                 req, newname, newpass, acce = req.split(' ')
-                if acce.lower() = 'true':
+                if acce.lower() == 'true':
                     acce = True
                 else:
                     acce = False
