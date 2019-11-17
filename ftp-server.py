@@ -51,8 +51,13 @@ exit - выход'''.encode())
         psw = await reader.read(100)
         names = open('names.txt','a')
         names.write(str([addr[0],str(name.decode()),str(psw)[2:-1]])+"\n")
-        os.mkdir('users_dir\\\\'+name.decode())
-        os.chdir('users_dir\\\\'+name.decode())
+        try:
+            os.mkdir('users_dir\\\\'+name.decode())
+            os.chdir('users_dir\\\\'+name.decode())
+        except:
+            os.mkdir('users_dir')
+            os.mkdir('users_dir\\\\'+name.decode())
+            os.chdir('users_dir\\\\'+name.decode())
         log=open('log.txt','w')
         log.close()
         writer.write('''Welcome to my server!
