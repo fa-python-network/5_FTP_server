@@ -1,0 +1,42 @@
+INFO:root:Server established. Socket's listening
+INFO:root:('127.0.0.1', 52131) connected
+INFO:root:Server got message: <Login is:> admin
+INFO:root:Known admin came
+INFO:root:admin entered right password
+INFO:root:admin entered his directory
+INFO:root:Server got message: ls
+INFO:root:Server got message: cat 1.txt
+INFO:root:('127.0.0.1', 52137) connected
+INFO:root:Server got message: <Login is:> nick
+INFO:root:Known nick came
+INFO:root:nick entered right password
+INFO:root:nick entered his directory
+INFO:root:Server got message: ls
+INFO:root:Server got message: cat 2.txt
+INFO:root:Server established. Socket's listening
+INFO:root:('127.0.0.1', 52151) connected
+INFO:root:Server got message: <Login is:> admin
+INFO:root:Known admin came
+INFO:root:admin entered right password
+INFO:root:admin entered his directory
+INFO:root:Server got message: ls
+INFO:root:Server established. Socket's listening
+INFO:root:('127.0.0.1', 52181) connected
+INFO:root:Server got message: <Login is:> nick
+INFO:root:Known nick came
+INFO:root:nick entered wrong password
+INFO:root:nick entered right password
+INFO:root:nick entered his directory
+INFO:root:Server got message: rmdir nick
+INFO:root:Server established. Socket's listening
+INFO:root:('127.0.0.1', 52196) connected
+INFO:root:Server got message: <Login is:> admin
+INFO:root:Known admin came
+INFO:root:admin entered right password
+INFO:root:admin entered his directory
+INFO:root:Server established. Socket's listening
+INFO:root:('127.0.0.1', 52206) connected
+INFO:root:Server got message: <Login is:> admin
+INFO:root:Known admin came
+INFO:root:admin entered right password
+INFO:root:admin entered his directory

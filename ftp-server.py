@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
-import socket, os, re, csv
+import socket, os, re, csv, logging
 '''
 pwd - показывает название рабочей директории
-ls - показывает содержимое текущей директории
+ls <dirname> - показывает содержимое директории
 cat <filename> - отправляет содержимое файла
-mkdir - 
-rmdir - 
-rename - 
+mkdir <dirname> - создает папку
+rmdir <dirname> - удаляет папку
+rename <oldfilename> <newfilename> - переименовывает файл
+rm <filename> - удаляет файл
+exit - отключается от сервера
 '''
 
 name = ''
 user = []
 udir = ''
+logging.basicConfig(filename="serv.log", level=logging.INFO)
 
 def login(nm, conn):
     global name
@@ -43,6 +46,7 @@ def user_known(usr, conn):
     global udir
     user = usr
     mes = ''
+    logging.info(f'Known {user[0]} came')
     
     while True:
         mes = mes + 'Введите пароль:'
@@ -58,10 +62,12 @@ def user_known(usr, conn):
         print(request)
         
         if user[1] == request:
+            logging.info(f'{user[0]} entered right password')
             udir = os.path.join(os.getcwd(), 'docs')
             break
         
         else:
+            logging.info(f'{user[0]} entered wrong password')
             mes = 'Пароль неверный. '
     
     return conn
@@ -69,6 +75,7 @@ def user_known(usr, conn):
 def user_unknown(name, conn):
     global udir
     global user
+    logging.info(f'Unknown {user[0]} came')
     
     conn.send('Придумайте пароль:'.encode())
     
@@ -153,6 +160,7 @@ def process(req, conn):
             return 'Wrong path'
         
     elif req == 'exit':
+        logging.info(f'{name} exited')
         return 'exit'
         
     return 'server'
@@ -160,9 +168,12 @@ def process(req, conn):
 
 PORT = 9990
 
+
 sock = socket.socket()
 sock.bind(('', PORT))
 sock.listen(1)
+logging.info("Server established. Socket's listening")
+
 while True:
     name = ''
     user = []
@@ -171,13 +182,16 @@ while True:
     print("Прослушиваем порт", PORT)
     conn, addr = sock.accept()
     print(addr)
+    logging.info(f'{addr} connected')
     
     request = conn.recv(1024).decode()
     print(request)
+    logging.info(f'Server got message: {request}')
     
     conn = process(request, conn)
     response = "Добро пожаловать, " + user[0]
     conn.send(response.encode())
+    logging.info(f'{name} entered his directory')
     
     while True:
         print("Прослушиваем порт", PORT)
@@ -189,6 +203,7 @@ while True:
             break
         else:
             print(request)
+            logging.info(f'Server got message: {request}')
         
         response = process(request, conn)
         conn.send(response.encode())
