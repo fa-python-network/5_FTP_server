@@ -1,17 +1,17 @@
-import socket
+import asyncio
+async def tcp_echo_client():
+    reader, writer = await asyncio.open_connection(
+        '127.0.0.1', 9095)
+    while True:
+        data = await reader.read(1000)
+        if data.decode()!='this message is never going to be printed':
+            print(f'SERVER: {data.decode()}')
+        message = input()
+        writer.write(message.encode())
+        if message == 'exit':
+                writer.close()
+                print('Bye, client')
+                break
+        
 
-HOST = 'localhost'
-PORT = 6666
-
-while True:
-    request = input('>')
-    
-    sock = socket.socket()
-    sock.connect((HOST, PORT))
-    
-    sock.send(request.encode())
-    
-    response = sock.recv(1024).decode()
-    print(response)
-    
-    sock.close()
+asyncio.run(tcp_echo_client())
