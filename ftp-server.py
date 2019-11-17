@@ -11,8 +11,6 @@ cat <filename> - отправляет содержимое файла
 '''
 os.chdir('docs')
 maindir = os.path.join(os.getcwd())
-print(maindir)
-print(len(maindir))
 def process(req, root):
     try:
         try:
@@ -43,7 +41,7 @@ def process(req, root):
                 try:
                     req, namedir = req.split(' ')
                     os.chdir(namedir)
-                    if usname not in os.getcwd()[42:]:
+                    if usname not in os.getcwd()[42:] and not root:
                         os.chdir(dirname)
                         raise Exception
                     dirname = os.path.join(os.getcwd())
@@ -66,6 +64,19 @@ def process(req, root):
                 req, namefile = req.split(' ')
                 os.remove(namefile)
                 return 'Файл удален.'
+            elif 'newad' in req and root:
+                req, newname, newpass, acce = req.split(' ')
+                if acce.lower() = 'true':
+                    acce = True
+                else:
+                    acce = False
+                names[newname] = [newpass, acce]
+                os.chdir(maindir)
+                os.mkdir(newname)
+                with open('names.json', 'w') as file:
+                    json.dump(names, file)
+                os.chdir(dirname)
+                return f'Новый пользователь {newname}, создан.'
             
             return 'bad request'
         
