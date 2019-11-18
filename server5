@@ -11,8 +11,9 @@ def process(req):
  #  elif req == 'touch': #sozdanie file
  #      return '; '.join(os.touch())
     elif req == 'mkdir': #sozdanie papka
+        name=input('Enter the name:')
         try:
-            os.mkdir("Test")
+            os.mkdir(name)
             return "OK"
         except:
             return "Fail"
