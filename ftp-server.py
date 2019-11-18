@@ -12,10 +12,13 @@ create <Название файла> - создает файл
 remove <Название файла> - удаляет файл
 rename <Название файла> - переименовывает файл
 copy <Название файла> <Название нового файла> - копирует файл
+get <Название файла> - скачать с сервера файл
+push <Название файла>	- загрузить на сервер файл
 '''
 
 dirname = os.path.join(os.getcwd(), 'docs')
 def process(req):
+    global conn
     if req == 'pwd':
         return dirname
     elif req == 'ls':
@@ -58,6 +61,28 @@ def process(req):
         req = req.split(' ')
         shutil.copyfile(os.path.join(os.getcwd(), 'docs', req[1]), os.path.join(os.getcwd(), 'docs', req[2]))
         return 'Файл скопирован'
+    elif req.split(' ')[0] == 'get':																				#скачать текстовый файл
+        if req.split(' ')[1] != '_eoc_':
+            if os.path.exists(os.path.join(dirname,req.split(' ')[1])):
+                if os.path.isfile(os.path.join(dirname,req.split(' ')[1])):
+                    if '..' in req.split(' ')[1]:
+                        return 'Не допускается использование ..'
+                    with open(os.path.join(dirname,req.split(' ')[1]),'r',encoding='UTF-8') as f:
+                        return 'success-!-!-!->'+f.read()
+                else:
+                    return 'Это не файл'
+            else:
+                return 'Нет такого файла'
+        else:
+            return 'Не введено название файла'
+    elif req.split(' ')[0] == 'push':																				#загрузить текстовый файл от клиента
+        if req.split(' ')[1] != '_eoc_':
+            if '..' in req.split(' ')[1] or '/' in req.split(' ')[1] or '\\' in req.split(' ')[1]:
+                return 'Не допускается использование .. / \\'
+            filecontent = conn.recv(1024)
+            with open(os.path.join(dirname,req.split(' ')[1]),'w') as f:
+                f.write(filecontent.decode())
+            return 'Готово'
     return 'bad request'
 
 PORT = 6666
