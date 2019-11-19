@@ -1,35 +1,47 @@
 import socket
 import os
-'''
-pwd - показывает название рабочей директории
-ls - показывает содержимое текущей директории
-cat <filename> - отправляет содержимое файла
-'''
 
-dirname = os.path.join(os.getcwd(), 'docs')
+PORT = 9065
 
 def process(req):
-    if req == 'pwd':
-        return dirname
-    elif req == 'ls':
-        return '; '.join(os.listdir(dirname))
-    return 'bad request'
-
-
-PORT = 6666
+ #   if req == 'look':
+ #      return os.getcwd()
+    if req == 'look': 
+        return '; '.join(os.listdir())
+ #  elif req == 'touch': #sozdanie file
+ #      return '; '.join(os.touch())
+    elif req == 'mkdir': #sozdanie papka
+        name=conn.recv(1024).decode()
+        try:
+        	print(name)
+        	os.mkdir(name)
+        	return "OK"
+        except:
+            return "Fail"
+ #delite papka   
+    elif req == 'deldir': 
+        name1=conn.recv(1024).decode()
+        try:
+            print(name1)
+            os.rmdir(name1)
+            return "OK"
+        except:
+            return "Fail"
+    else:
+        return 'bad request'
 
 sock = socket.socket()
 sock.bind(('', PORT))
 sock.listen()
-print("Прослушиваем порт", PORT)
 
 while True:
+    print("Port:",PORT)
     conn, addr = sock.accept()
-    
+    print(addr)
+
     request = conn.recv(1024).decode()
     print(request)
-    
     response = process(request)
     conn.send(response.encode())
 
-conn.close()
+sock.close()
