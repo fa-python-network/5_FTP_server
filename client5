@@ -1,16 +1,19 @@
 import socket
 
 HOST = 'localhost'
-PORT = 9091
+PORT = 9065
 
 while True:
     sock = socket.socket()
     sock.connect((HOST, PORT))
-
+    print('Menu vosmojnostey:\n posmotret chto v papka - look\n sozdat papka - mkdir\n udalit papka - deldir\n udalit file - delfile\n pereimenovat file - renamefile\n skopy file s clienta na server - copycs\n            s server na client - copysc\n exit - exit')
     request = input('myftp@shell$ ')
-    sock.send(request.encode())
-
+    sock.send(request.encode())   
+    if (request == "mkdir") or(request == "deldir") :
+        name=str(input("Enter the name:"))
+        sock.send(name.encode())
+    if request == "exit":
+        sock.close()
+    
     response = sock.recv(1024).decode()
     print(response)
-
-    sock.close()
