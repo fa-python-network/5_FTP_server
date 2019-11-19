@@ -1,24 +1,32 @@
 import socket
 import os
 
-PORT = 9091
+PORT = 9065
 
 def process(req):
-    if req == 'pws':
-        return os.getcwd()
-    elif req == 'ls': 
+ #   if req == 'look':
+ #      return os.getcwd()
+    if req == 'look': 
         return '; '.join(os.listdir())
  #  elif req == 'touch': #sozdanie file
  #      return '; '.join(os.touch())
     elif req == 'mkdir': #sozdanie papka
-        name=input('Enter the name:')
+        name=conn.recv(1024).decode()
         try:
-            os.mkdir(name)
+        	print(name)
+        	os.mkdir(name)
+        	return "OK"
+        except:
+            return "Fail"
+ #delite papka   
+    elif req == 'deldir': 
+        name1=conn.recv(1024).decode()
+        try:
+            print(name1)
+            os.rmdir(name1)
             return "OK"
         except:
             return "Fail"
-    elif req == 'del': #delite papka
-        return os.rmdir("Test")
     else:
         return 'bad request'
 
