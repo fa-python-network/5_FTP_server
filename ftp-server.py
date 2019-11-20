@@ -4,6 +4,7 @@ from sendcheck import *
 from time import sleep
 import json
 import logging
+
 '''
 pwd - показывает название рабочей директории
 ls - показывает содержимое текущей директории
@@ -20,7 +21,7 @@ newad - добавление нового пользователя. (( адми�
 '''
 os.chdir('docs')
 maindir = os.path.join(os.getcwd())
-
+mainlen = len(maindir)
 
 
 def process(req, root):
@@ -30,6 +31,14 @@ def process(req, root):
             global accept
             if req == 'pwd':
                 return dirname
+            elif 'send' in req:
+                req, namefile = req.split(' ')
+                if checkfile(namefile,conn, maindir, usname):
+                    return 'Файл принят.'
+                else:
+                    return 'Ограничение по памяти.'
+            elif '\\' in req or '/' in req:
+                return 'Указание полных путей не доступно в данной версии программы. Также как и использование символа \'/\'.' 
             elif req == 'ls':
                 if os.listdir(dirname) != []:
                     return '; '.join(os.listdir(dirname))
@@ -53,7 +62,7 @@ def process(req, root):
                 try:
                     req, namedir = req.split(' ')
                     os.chdir(namedir)
-                    if usname not in os.getcwd()[42:] and not root:
+                    if usname not in os.getcwd()[mainlen:] and not root:
                         os.chdir(dirname)
                         raise Exception
                     dirname = os.path.join(os.getcwd())
@@ -64,12 +73,6 @@ def process(req, root):
                 req, namedir, newname = req.split(' ')
                 os.rename(namedir, newname)
                 return f'Папка {namedir}, успешно переименована в {newname}.'
-            elif 'send' in req:
-                req, namefile = req.split(' ')
-                if checkfile(namefile,conn, maindir, usname):
-                    return 'Файл принят.'
-                else:
-                    return 'Ограничение по памяти.'
             elif 'cat' in req:
                 req, namefile = req.split(' ')
                 sendfile(namefile, conn)
@@ -95,7 +98,7 @@ def process(req, root):
                 return str(get_size(maindir+f'/{usname}')) + ' bytes'
             return 'bad request'
         
-        except ValueError:
+        except (ValueError, PermissionError):
             return 'Некоректно введенная команда.'
     
     except FileNotFoundError:
