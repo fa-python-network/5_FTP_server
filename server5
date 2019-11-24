@@ -4,13 +4,12 @@ import os
 PORT = 9065
 
 def process(req):
- #   if req == 'look':
- #      return os.getcwd()
+
     if req == 'look': 
         return '; '.join(os.listdir())
- #  elif req == 'touch': #sozdanie file
- #      return '; '.join(os.touch())
+
     elif req == 'mkdir': #sozdanie papka
+	
         name=conn.recv(1024).decode()
         try:
         	print(name)
@@ -19,7 +18,8 @@ def process(req):
         except:
             return "Fail"
  #delite papka   
-    elif req == 'deldir': 
+    elif req == 'deldir':
+	
         name1=conn.recv(1024).decode()
         try:
             print(name1)
@@ -27,6 +27,28 @@ def process(req):
             return "OK"
         except:
             return "Fail"
+    elif req == 'delfile':
+    		
+        name2=conn.recv(1024).decode()
+        try:
+            print(name2)
+            os.remove(name2)
+            return "OK"
+        except:
+            return "Fail"
+    elif req == 'renamefile':
+	
+        name3=conn.recv(1024).decode()
+        name4=conn.recv(1024).decode()
+        try:
+            print(name3,name4)
+            os.rename(name3,name4)
+            return "OK"
+        except:
+            return "Fail"
+	
+    elif req == 'exit':
+        conn.close()
     else:
         return 'bad request'
 
