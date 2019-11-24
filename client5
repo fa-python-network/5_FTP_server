@@ -9,11 +9,21 @@ while True:
     print('Menu vosmojnostey:\n posmotret chto v papka - look\n sozdat papka - mkdir\n udalit papka - deldir\n udalit file - delfile\n pereimenovat file - renamefile\n skopy file s clienta na server - copycs\n            s server na client - copysc\n exit - exit')
     request = input('myftp@shell$ ')
     sock.send(request.encode())   
-    if (request == "mkdir") or(request == "deldir") :
+    if (request == "mkdir") or (request == "deldir") or (request == "delfile"):
         name=str(input("Enter the name:"))
         sock.send(name.encode())
-    if request == "exit":
-        sock.close()
+    elif (request == 'renamefile'):
+        name=str(input("Enter the name:"))
+        sock.send(name.encode())
+        name2=str(input("Enter the name:"))
+        sock.send(name2.encode())
+    elif request == "exit":
+        try:
+            sock.close()
+        except:
+            print('fals')
+    else:
+        print('')
     
     response = sock.recv(1024).decode()
     print(response)
