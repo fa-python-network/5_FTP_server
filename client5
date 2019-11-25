@@ -1,7 +1,7 @@
 import socket
 
 HOST = 'localhost'
-PORT = 9065
+PORT = 9057
 
 while True:
     sock = socket.socket()
@@ -13,10 +13,26 @@ while True:
         name=str(input("Enter the name:"))
         sock.send(name.encode())
     elif (request == 'renamefile'):
-        name=str(input("Enter the name:"))
+        name=str(input("Enter old name:"))
         sock.send(name.encode())
-        name2=str(input("Enter the name:"))
+        name2=str(input("Enter new name:"))
         sock.send(name2.encode())
+    elif (request == 'copycs'):
+        name=str(input('Enter name:'))
+        
+        f=open(name,'r')
+        sock.send(name.encode())
+        k=(0)
+        for line in f:
+            k=k+1
+        k=str(k)
+        sock.send(k.encode())
+        for line in f:
+            sock.send(line.encode())
+        print('ok')
+        f.close()
+
+
     elif request == "exit":
         try:
             sock.close()
@@ -27,3 +43,6 @@ while True:
     
     response = sock.recv(1024).decode()
     print(response)
+
+
+
