@@ -1,7 +1,8 @@
 import socket
 import os
+import shutil
 
-PORT = 9065
+PORT = 9057
 
 def process(req):
 
@@ -46,7 +47,20 @@ def process(req):
             return "OK"
         except:
             return "Fail"
-	
+    elif req == 'copycs':
+        name=conn.recv(1024).decode()
+        print(name)
+        f1 = open (name,'w')
+        try:
+            k=conn.recv(1024).decode()
+            k=int(k1)
+            for i in range(0,k):
+                 line=conn.recv(1024).decode()
+                 f1.write(line + '\n')
+            f1.close
+            return 'ok'
+        except:
+            return 'fail'
     elif req == 'exit':
         conn.close()
     else:
@@ -67,3 +81,4 @@ while True:
     conn.send(response.encode())
 
 sock.close()
+
