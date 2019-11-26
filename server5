@@ -1,8 +1,9 @@
 import socket
 import os
 import shutil
+import time
 
-PORT = 9057
+PORT = 9049
 
 def process(req):
 
@@ -48,19 +49,35 @@ def process(req):
         except:
             return "Fail"
     elif req == 'copycs':
-        name=conn.recv(1024).decode()
-        print(name)
-        f1 = open (name,'w')
+        print(1)
+        data=conn.recv(1024).decode()
+        
+        msg = data.split("\n")
+        #while data:
+        #    data=conn.recv(1024).decode()
+        #    msg += data
+        name=msg[0]
+        print(name, msg)
         try:
-            k=conn.recv(1024).decode()
-            k=int(k1)
-            for i in range(0,k):
-                 line=conn.recv(1024).decode()
-                 f1.write(line + '\n')
-            f1.close
+            f= open(name,'w')
+            print(name)
+            for line in msg:
+        	    if (line!=msg[0]):
+        		    f.write(line+"\n")
+            f.close()
             return 'ok'
         except:
             return 'fail'
+    elif req == 'copysc':
+        print(1)
+        name=conn.recv(1024).decode()
+        print(name)
+        f=open(name,'r')
+        for line in f:
+            conn.send(line.encode())
+        f.close()
+        time.sleep(1)
+        return ''
     elif req == 'exit':
         conn.close()
     else:
