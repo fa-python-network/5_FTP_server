@@ -3,6 +3,7 @@ from json import load
 from socket import AF_INET, SOCK_STREAM
 import threading
 import socket
+import shutil
 
 
 '''
@@ -64,10 +65,67 @@ def handle_client(conn):
             file = m.split()[-1]
             with open(f'docs/{file}') as f:
                 send(conn, f.read())
+
+        elif m.startswith('mkdir'):
+            path = os.path.join(os.getcwd(), 'docs', m[6:])
+            if not os.path.exists(path):
+                os.makedirs(path)
+                send(conn, f'Папка {m[6:]} создана')
+            else:
+                send(conn, 'tакая папка уже существет')
+
+        elif m.startswith('rmdir'):
+            path = os.path.join(os.getcwd(), 'docs', m[6:])
+            if os.path.exists(path):
+                os.rmdir(path)
+                send(conn, f'Папка {m[6:]} удалена')
+            else:
+                send(conn, 'Такой папки не существует')
+
+        elif m.startswith('create'):
+            file = os.path.join(os.getcwd(), 'docs', m[7:])
+            if not os.path.isfile(file):
+                f = open(file, 'w')
+                f.close()
+                send(conn, 'Файл создан')
+            else:
+                send(conn, 'Такой файл уже существует')
+
+        elif m.startswith('remove'):
+            file = os.path.join(os.getcwd(), 'docs', m[7::])
+            if os.path.isfile(file):
+                os.remove(file)
+                send(conn,"Файл удален")
+            else:
+                send(conn,"нет такого файла")
+
+        elif m.startswith('rename'):
+                m=m.split()
+                file = os.path.join(os.getcwd(), 'docs', a[1])
+                if os.path.isfile(file):
+                    os.rename(os.path.join(os.getcwd(), 'docs', a[1]), os.path.join(os.getcwd(), 'docs', a[2]))
+                    send(conn, "Файл переименован")
+                else:
+                    send(conn,"Нет файла")
+        elif m.startswith('send'):
+                s = os.path.join(os.getcwd(), 'docs', m[5::])
+                try:
+                    shutil.copy(s, os.getcwd())
+                    send(conn,"The file was copied to the server")
+                except:
+                    send(conn,"There's no such file in the directory")
+
+        elif m.startswith('get'):
+            s = os.path.join(os.getcwd(), 'docs')
+            a = os.path.join(os.getcwd(), m[4::])
+            try:
+                shutil.copy(a, s)
+                send(conn,"The file was copied from the server")
+            except:
+                send(conn,"There's no such file on the server")
+
         else:
-            send(conn, m)
-
-
+            send(conn, 'Command is not founded')
 
 sock = socket.socket(AF_INET, SOCK_STREAM)
 sock.bind((host, port))
