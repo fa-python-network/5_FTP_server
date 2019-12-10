@@ -36,13 +36,13 @@ def process(req):
                 os.rmdir(path)
                 return 'Операция выполнена успешно'
 
-    elif reqreq[:5] == 'touch':
+    elif req[:5] == 'touch':
         path = os.path.join(os.getcwd(), 'docs', req[6:])
         open(path,'tw')
         return 'Операция выполнена успешно'
 
 
-    elif reqreq[:6] == 'remove':
+    elif req[:6] == 'remove':
         path = os.path.join(os.getcwd(), 'docs', req[7:])
         try:
             os.remove(path)
@@ -50,7 +50,7 @@ def process(req):
         except:
             return 'Операция не выполнена'
 
-    elif reqreq[:6] == 'rename':
+    elif req[:6] == 'rename':
         if req[:6] == " ":
             try:
                 req_s = req.split(' ')
