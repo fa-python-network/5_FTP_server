@@ -71,7 +71,7 @@ def process(request):
         
         
     elif request[0:2] == 'cp':
-        if request[3:12] == 'localhost' && request.rfind('localhost') != 3:
+        if request[3:12] == 'localhost' and request.rfind('localhost') != 3:
             try:
                 shutil.copyfile(address+request[13:].split()[0], address+request[(request.rfind('localhost')+10):])
                 return 'Выполнено: файл скопирован'
