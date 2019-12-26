@@ -1,0 +1,12 @@
+pwd
+ls
+cat log.txt
+chdir ..
+chdir ..
+ls
+
+pwd
+help
+pwd
+ls
+

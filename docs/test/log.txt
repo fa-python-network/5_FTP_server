@@ -1,0 +1,65 @@
+test log
+close
+closr
+pwd
+ls
+mkdir 123
+chdir ..
+pwd
+cat 123
+pwd
+ls
+rm 2.txt
+rm log.txt
+ch_dir 123
+chdir 123
+
+ pwd
+pwd
+ls
+ls
+help
+help
+help
+help
+help
+pwd
+ls
+ls
+pwd
+cat 123
+pwd
+ls
+cat commands.txt
+help
+mkdir test123
+ls
+rm commands.txt
+rm commands.txt
+rmdir 123
+ls
+rename README.txt delete.txt
+copy delete.txt help123/txt
+ls
+rename delete.txt 123.txt
+copy for_copy.txt copy.txt
+copy for_copy.txt 123.txt
+ls
+cat 123.txt
+push log.txt for_push.txt
+ls
+copy for_copy.txt 123.txt
+ls
+copy log.txt for_push.txt
+push log.txt for_push.txt
+copy for_copy.txt 123.txt
+push log.txt for_push.txt
+chdir 12
+ls
+chdir test123
+mkdir 123
+
+chdir ..
+help
+suck
+
