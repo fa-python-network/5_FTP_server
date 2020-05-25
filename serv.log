@@ -1,0 +1,17 @@
+INFO:root:Server established. Socket's listening
+INFO:root:('127.0.0.1', 64748) connected
+INFO:root:Server got message: <Login is:> Zhora
+INFO:root:Server established. Socket's listening
+INFO:root:('127.0.0.1', 64763) connected
+INFO:root:Server got message: <Login is:> ����
+INFO:root:Server established. Socket's listening
+INFO:root:('127.0.0.1', 64801) connected
+INFO:root:Server got message: <Login is:> Zhora
+INFO:root:Server established. Socket's listening
+INFO:root:('127.0.0.1', 64805) connected
+INFO:root:Server got message: <Login is:> admin
+INFO:root:Known admin came
+INFO:root:admin entered right password
+INFO:root:admin entered his directory
+
+INFO:root:Server established. Socket's listening
