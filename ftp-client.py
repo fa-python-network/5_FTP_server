@@ -61,7 +61,7 @@ while True:
     request = input(current_directory + '>')
     request = request.strip()
     if request == "exit":
-        print("goodbye")
+        print("Всего хорошего!")
         break
     sock = socket.socket()
     sock.connect((HOST, PORT))
